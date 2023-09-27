@@ -1,8 +1,14 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { COLORS } from "../styles";
 import { deviceWidth } from "../utils/Dimension";
-// import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from "react-native-vector-icons/Ionicons";
 import { FormikErrors, FormikTouched } from "formik";
 
 type InputProps = React.ComponentPropsWithRef<typeof TextInput> & {
@@ -22,6 +28,7 @@ type InputProps = React.ComponentPropsWithRef<typeof TextInput> & {
     | undefined;
   isTouched: boolean | FormikTouched<any> | FormikTouched<any>[] | undefined;
   secureTextEntry?: boolean;
+  onPressImage?: () => void;
 };
 
 export const CustomTextInput = ({
@@ -36,6 +43,7 @@ export const CustomTextInput = ({
   errorText,
   isTouched,
   secureTextEntry,
+  onPressImage,
 }: InputProps) => {
   let isPrimaryColor = activeInputField === name || value.length !== 0;
 
@@ -51,13 +59,6 @@ export const CustomTextInput = ({
           },
         ]}
       >
-        {/* {IconName && (
-          <Icon
-            name={IconName}
-            size={24}
-            color={isPrimaryColor ? COLORS.primary : COLORS.darkGrey}
-          />
-        )} */}
         <View style={{ flex: 1 }}>
           <TextInput
             name={name}
@@ -74,6 +75,15 @@ export const CustomTextInput = ({
             onChangeText={(text) => onChangeText(text)}
           />
         </View>
+        {IconName && (
+          <TouchableOpacity onPress={onPressImage}>
+            <Icon
+              name={IconName}
+              size={24}
+              color={isPrimaryColor ? COLORS.primary : COLORS.darkGrey}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.errorContainer}>
         {errorText && isTouched && (

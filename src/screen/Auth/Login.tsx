@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,42 +9,46 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
-} from 'react-native';
-import {Button, CustomTextInput} from '../../components';
-import {Formik} from 'formik';
-import {object, string} from 'yup';
-import {COLORS} from '../../styles';
-import {deviceHeight, deviceWidth} from '../../utils/Dimension';
-import {useDispatch} from 'react-redux';
-import {setExistingUser} from '../../redux/slice';
-import * as Keychain from 'react-native-keychain';
+} from "react-native";
+import { Button, CustomTextInput } from "../../components";
+import { Formik } from "formik";
+import { object, string } from "yup";
+import { COLORS } from "../../styles";
+import { deviceHeight, deviceWidth } from "../../utils/Dimension";
+import { useDispatch } from "react-redux";
+import { setExistingUser } from "../../redux/slice";
+import * as Keychain from "react-native-keychain";
 
 const Login = () => {
-  const [activeInputField, setActiveInputField] = useState<string>('');
+  const [activeInputField, setActiveInputField] = useState<string>("");
+  const [visibleInput, setVisibleInput] = useState<boolean>(false);
   const dispatch = useDispatch();
   const emailRegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   const formValidation = object({
     email: string()
-      .matches(emailRegExp, 'Please enter valid Email')
-      .required('Email field is required'),
+      .matches(emailRegExp, "Please enter valid Email")
+      .required("Email field is required"),
     password: string()
-      .min(8, 'Minimum 8 character required')
-      .required('Password field is required'),
+      .min(8, "Minimum 8 character required")
+      .required("Password field is required"),
   });
 
   const onLoginPress = async (email: string, password: string) => {
     if (
-      email.toLowerCase() === 'reactnative@jetdevs.com' &&
-      password === 'jetdevs@123'
+      email.toLowerCase() === "reactnative@jetdevs.com" &&
+      password === "jetdevs@123"
     ) {
       dispatch(setExistingUser(true));
-      await Keychain.setGenericPassword(JSON.stringify(email), JSON.stringify(password));
+      await Keychain.setGenericPassword(
+        JSON.stringify(email),
+        JSON.stringify(password)
+      );
     } else {
       Alert.alert(
-        'User unauthorized ',
+        "User unauthorized ",
         "Please enter valid user's credential",
-        [{text: 'OK', onPress: () => {}}],
+        [{ text: "OK", onPress: () => {} }]
       );
     }
   };
@@ -55,30 +59,25 @@ const Login = () => {
       <TouchableWithoutFeedback
         onPress={() => {
           Keyboard.dismiss();
-        }}>
+        }}
+      >
         <SafeAreaView style={styles.mainBackground}>
           <View style={styles.container}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={require('../../assets/images/logo.png')}
-                style={{height: 50, width: 50}}
-                resizeMode="contain"
-              />
-            </View>
             <View style={styles.headerContainer}>
-              <Text style={styles.headerText}>LOGIN</Text>
+              <Text style={styles.headerText}>Login</Text>
             </View>
             <View style={styles.fieldContainer}>
               <Formik
                 initialValues={{
-                  email: '',
-                  password: '',
+                  email: "",
+                  password: "",
                 }}
                 validateOnMount={true}
                 validationSchema={formValidation}
                 onSubmit={(values: any) => {
                   onLoginPress(values.email, values.password);
-                }}>
+                }}
+              >
                 {({
                   handleChange,
                   handleBlur,
@@ -91,11 +90,10 @@ const Login = () => {
                   <>
                     <CustomTextInput
                       name="email"
-                      IconName="email"
                       placeHolder="Email"
                       value={values.email}
-                      onBlur={handleBlur('email')}
-                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur("email")}
+                      onChangeText={handleChange("email")}
                       activeInputField={activeInputField}
                       setActiveInputField={setActiveInputField}
                       errorText={errors.email}
@@ -103,16 +101,17 @@ const Login = () => {
                     />
                     <CustomTextInput
                       name="password"
-                      IconName="lock"
+                      IconName={visibleInput ? "eye" : "eye-off"}
                       placeHolder="Password"
                       value={values.password}
-                      onBlur={handleBlur('password')}
-                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur("password")}
+                      onChangeText={handleChange("password")}
                       activeInputField={activeInputField}
                       setActiveInputField={setActiveInputField}
                       errorText={errors.password}
                       isTouched={touched.password}
-                      secureTextEntry={true}
+                      secureTextEntry={visibleInput}
+                      onPressImage={() => setVisibleInput(!visibleInput)}
                     />
                     <Button
                       title="LOGIN"
@@ -139,39 +138,29 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: deviceWidth * 0.85,
-    marginVertical: deviceHeight * 0.1,
+    width: deviceWidth * 0.9,
+    marginVertical: deviceHeight * 0.2,
     borderRadius: 10,
     backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     mainContainer: {},
-    alignSelf: 'center',
-  },
-  logoContainer: {
-    position: 'absolute',
-    top: -30,
-    height: 70,
-    width: 70,
-    borderRadius: 35,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
   },
   headerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerText: {
-    fontSize: 28,
-    color: COLORS.solidBlack,
-    fontWeight: '500',
+    fontSize: 20,
+    color: COLORS.lightDark,
+    fontWeight: "bold",
   },
   fieldContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: deviceHeight * 0.25,
   },
   blankContainer: {
