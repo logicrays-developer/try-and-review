@@ -5,7 +5,7 @@ export const COLORS = {
   white: "#FFFFFF",
   pista: "#BBDABB",
   lightRed: "#F29B9B",
-  liteWhite: "#F8F8F8",
+  liteWhite: "#f8f9fd",
   lightGreen: "#4CAF50",
   darkGrey: "#D1D3DC",
   lightGrey: "#E5E5E5",
@@ -17,4 +17,5 @@ export const COLORS = {
   movieCard: "#EFEAF5",
   danceCard: "#FEF9E4",
   travelCard: "#FCF0E7",
+  placeText: "#99a1ac",
 };

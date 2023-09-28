@@ -46,26 +46,25 @@ export const CustomTextInput = ({
   onPressImage,
 }: InputProps) => {
   let isPrimaryColor = activeInputField === name || value.length !== 0;
-
+  console.log("PRIMAGRR");
   return (
     <>
       <View
         style={[
           styles.container,
           {
-            borderBottomColor: isPrimaryColor
-              ? COLORS.primary
-              : COLORS.darkGrey,
+            backgroundColor: isPrimaryColor ? COLORS.white : "#f8f9fd",
+            borderWidth: 1,
+            borderRadius: 5,
+            borderColor: isPrimaryColor ? COLORS.solidBlack : "#99a1ac",
           },
         ]}
       >
-        <View style={{ flex: 1 }}>
+        <View>
           <TextInput
             name={name}
             autoCapitalize="none"
-            placeholderTextColor={
-              isPrimaryColor ? COLORS.primary : COLORS.darkGrey
-            }
+            placeholderTextColor={isPrimaryColor ? COLORS.lightGrey : "#99a1ac"}
             style={styles.inputField}
             placeholder={placeHolder}
             value={value}
@@ -101,7 +100,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottomWidth: 1,
   },
   inputField: {
     fontSize: 16,
