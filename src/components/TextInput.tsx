@@ -7,19 +7,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { COLORS } from "../styles";
-import { deviceWidth } from "../utils/Dimension";
 import Icon from "react-native-vector-icons/Ionicons";
 import { FormikErrors, FormikTouched } from "formik";
 
 type InputProps = React.ComponentPropsWithRef<typeof TextInput> & {
-  name: string;
+  name?: string;
   IconName?: string;
   placeHolder: string;
   value: string;
   onBlur: (e: any) => void;
   onChangeText: (text: string | any) => void;
-  activeInputField: string;
-  setActiveInputField: (text: string) => void;
   errorText:
     | string
     | string[]
@@ -29,89 +26,99 @@ type InputProps = React.ComponentPropsWithRef<typeof TextInput> & {
   isTouched: boolean | FormikTouched<any> | FormikTouched<any>[] | undefined;
   secureTextEntry?: boolean;
   onPressImage?: () => void;
+  containerStyles?: object;
+  inputStyles?: object;
+  onNextFocus?: any;
 };
 
-export const CustomTextInput = ({
-  name,
-  IconName,
-  placeHolder,
-  value,
-  onBlur,
-  onChangeText,
-  activeInputField,
-  setActiveInputField,
-  errorText,
-  isTouched,
-  secureTextEntry,
-  onPressImage,
-}: InputProps) => {
-  let isPrimaryColor = activeInputField === name || value.length !== 0;
-  console.log("PRIMAGRR");
-  return (
-    <>
+export const CustomTextInput = React.forwardRef(
+  (
+    {
+      name,
+      IconName,
+      placeHolder,
+      value,
+      onBlur,
+      onChangeText,
+      secureTextEntry,
+      errorText,
+      isTouched,
+      containerStyles,
+      inputStyles,
+      onPressImage,
+      onNextFocus,
+    }: InputProps,
+    ref: object | any
+  ) => (
+    <View
+      style={{
+        marginBottom: 10,
+      }}
+    >
       <View
         style={[
           styles.container,
+          containerStyles,
           {
-            backgroundColor: isPrimaryColor ? COLORS.white : "#f8f9fd",
-            borderWidth: 1,
-            borderRadius: 5,
-            borderColor: isPrimaryColor ? COLORS.solidBlack : "#99a1ac",
+            backgroundColor:
+              value.length !== 0 ? COLORS.white : COLORS.liteWhite,
+            borderColor:
+              value.length !== 0 ? COLORS.darkGrey : COLORS.lightDark,
           },
         ]}
       >
-        <View>
-          <TextInput
-            name={name}
-            autoCapitalize="none"
-            placeholderTextColor={isPrimaryColor ? COLORS.lightGrey : "#99a1ac"}
-            style={styles.inputField}
-            placeholder={placeHolder}
-            value={value}
-            secureTextEntry={secureTextEntry}
-            onFocus={() => setActiveInputField(name)}
-            onBlur={(e) => onBlur(e)}
-            onChangeText={(text) => onChangeText(text)}
-          />
-        </View>
+        <TextInput
+          ref={ref}
+          style={[styles.inputField, inputStyles]}
+          placeholder={placeHolder}
+          value={value}
+          onBlur={(e) => onBlur(e)}
+          onChangeText={(text) => onChangeText(text)}
+          autoCapitalize="none"
+          secureTextEntry={secureTextEntry}
+          onSubmitEditing={onNextFocus}
+        />
         {IconName && (
-          <TouchableOpacity onPress={onPressImage}>
+          <TouchableOpacity
+            onPress={onPressImage}
+            style={{
+              padding: 5,
+            }}
+          >
             <Icon
               name={IconName}
-              size={24}
-              color={isPrimaryColor ? COLORS.primary : COLORS.darkGrey}
+              size={20}
+              color={secureTextEntry ? COLORS.darkGrey : COLORS.primary}
             />
           </TouchableOpacity>
         )}
       </View>
       <View style={styles.errorContainer}>
-        {errorText && isTouched && (
-          <Text style={styles.errorText}>{errorText.toString()}</Text>
-        )}
+        <Text style={styles.errorText}>
+          {errorText && isTouched ? errorText.toString() : " "}
+        </Text>
       </View>
-    </>
-  );
-};
+    </View>
+  )
+);
 
 const styles = StyleSheet.create({
   container: {
-    width: deviceWidth * 0.7,
-    height: 42,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    borderWidth: 1,
+    borderRadius: 5,
   },
   inputField: {
-    fontSize: 16,
-    marginLeft: 12,
-  },
-  errorText: {
-    fontSize: 14,
-    color: COLORS.errorText,
-    fontWeight: "400",
+    padding: 4,
+    paddingStart: 10,
   },
   errorContainer: {
     height: 20,
     alignSelf: "flex-start",
+  },
+  errorText: {
+    fontSize: 11.5,
+    color: COLORS.errorText,
+    alignItems: "center",
+    marginStart: 2,
   },
 });

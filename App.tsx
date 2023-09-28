@@ -10,10 +10,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={COLORS.transparent}
-        />
+        <StatusBar backgroundColor={COLORS.white} barStyle={"dark-content"} />
         <AppRouter />
       </PersistGate>
     </Provider>
