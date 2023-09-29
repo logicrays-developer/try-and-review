@@ -107,7 +107,7 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
             const dataError: any = error.response.data;
             switch (status) {
               case 400:
-                Alert.alert("Warning", dataError?.detail[0]);
+                Alert.alert("Warning", dataError?.message);
                 return reject(error);
               case 401:
                 // await dispatch(updateAccessToken(state?.user?.refreshToken));
