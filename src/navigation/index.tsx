@@ -33,7 +33,7 @@ const AppRouter = () => {
 
   return (
     <NavigationContainer>
-      {loading ? <Loader /> : isExistingUser ? <Main /> : <Auth />}
+      {loading ? <Loader /> : !isExistingUser ? <Main /> : <Auth />}
     </NavigationContainer>
   );
 };
