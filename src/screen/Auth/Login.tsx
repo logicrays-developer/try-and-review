@@ -1,29 +1,30 @@
-import React, { useState } from "react";
+import React, { createRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
-  StatusBar,
   Image,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
-  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
-import { Button } from "../../components";
-import { CustomTextInput } from "../../components";
+import { Button, Label } from "../../components/index";
+import { CustomTextInput } from "../../components/index";
 import { Formik } from "formik";
 import { object, string } from "yup";
 import { COLORS } from "../../styles";
 import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
-import { setExistingUser } from "../../redux/slice";
 import * as Keychain from "react-native-keychain";
+import { useNavigation } from "@react-navigation/native";
+import { makeAuthenticatedPostRequest } from "../../Config/Axios";
+import { setAccessToken, setRefreshToken } from "../../slices/userSlice";
 
 const Login = () => {
-  const [activeInputField, setActiveInputField] = useState<string>("");
-  const [visibleInput, setVisibleInput] = useState<boolean>(false);
+  const navigation: object | any = useNavigation();
+  const passwordRef: object | any = createRef();
+  const [visibleInput, setVisibleInput] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch();
   const emailRegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -37,30 +38,37 @@ const Login = () => {
   });
 
   const onLoginPress = async (email: string, password: string) => {
-    if (
-      email.toLowerCase() === "reactnative@jetdevs.com" &&
-      password === "jetdevs@123"
-    ) {
-      dispatch(setExistingUser(true));
-      await Keychain.setGenericPassword(
-        JSON.stringify(email),
-        JSON.stringify(password)
-      );
+    setIsVisible(true);
+    const params = {
+      username: email,
+      password: password,
+    };
+    const data = await dispatch(
+      makeAuthenticatedPostRequest("/api/app/login", params)
+    );
+    if (data.status == 200) {
+      dispatch(setAccessToken(data?.data?.token));
+      dispatch(setRefreshToken(data?.data?.refresh_token));
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "Home",
+          },
+        ],
+      });
+      setIsVisible(false);
     } else {
-      Alert.alert(
-        "User unauthorized ",
-        "Please enter valid user's credential",
-        [{ text: "OK", onPress: () => {} }]
-      );
+      setIsVisible(false);
     }
   };
 
   return (
-    <View style={styles.mainBackground}>
-      <StatusBar backgroundColor={COLORS.lightGrey} />
+    <KeyboardAvoidingView style={styles.mainBackground} behavior="padding">
       <SafeAreaView style={styles.mainBackground}>
         {/* Image container */}
-        <View style={styles.imageContainer}>
+        <TouchableOpacity activeOpacity={0.6} style={styles.imageContainer}>
           <Image
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
@@ -68,13 +76,15 @@ const Login = () => {
             style={styles.imageFlag}
             resizeMode="cover"
           />
-        </View>
+        </TouchableOpacity>
 
         {/* Login card container */}
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Login</Text>
-          </View>
+          <Label
+            title="Login"
+            containerStyle={styles.headerContainer}
+            titleStyle={styles.headerText}
+          />
           <View style={styles.fieldContainer}>
             <Formik
               initialValues={{
@@ -98,59 +108,113 @@ const Login = () => {
               }) => (
                 <View>
                   {/* Email Input */}
-                  <View>
-                    <TextInput
-                      name={"email"}
-                      autoCapitalize="none"
-                      placeholderTextColor={
-                        activeInputField ? COLORS.lightGrey : "#99a1ac"
-                      }
-                      style={styles.inputField}
-                      placeholder={"Email"}
-                      value={values.email}
-                      secureTextEntry={false}
-                      onFocus={() => setActiveInputField("email")}
-                      onBlur={(e) => handleBlur("email")}
-                      onChangeText={(text) => handleChange(text)}
-                    />
-                  </View>
-                  {/* <CustomTextInput
+                  <CustomTextInput
                     name="email"
-                    placeHolder="Email"
                     value={values.email}
+                    placeHolder={"Email"}
                     onBlur={handleBlur("email")}
                     onChangeText={handleChange("email")}
-                    activeInputField={activeInputField}
-                    setActiveInputField={setActiveInputField}
+                    onNextFocus={() => passwordRef.current.focus()}
                     errorText={errors.email}
                     isTouched={touched.email}
-                  /> */}
-                  {/* <CustomTextInput
+                  />
+
+                  {/* Password Input */}
+                  <CustomTextInput
                     name="password"
-                    IconName={visibleInput ? "eye" : "eye-off"}
-                    placeHolder="Password"
+                    ref={passwordRef}
+                    containerStyles={{
+                      alignItems: "center",
+                      flexDirection: "row",
+                      marginBottom: 0,
+                    }}
+                    inputStyles={{ flex: 1 }}
                     value={values.password}
+                    placeHolder="Password"
                     onBlur={handleBlur("password")}
                     onChangeText={handleChange("password")}
-                    activeInputField={activeInputField}
-                    setActiveInputField={setActiveInputField}
+                    onPressImage={() => setVisibleInput(!visibleInput)}
+                    secureTextEntry={visibleInput}
+                    IconName={visibleInput ? "eye" : "eye-off"}
                     errorText={errors.password}
                     isTouched={touched.password}
-                    secureTextEntry={visibleInput}
-                    onPressImage={() => setVisibleInput(!visibleInput)}
-                  /> */}
+                  />
+
+                  {/* Forgot Password */}
+                  <TouchableOpacity style={styles.forgotPasswordContainer}>
+                    <Text style={styles.forgotPasswordText}>
+                      Forgot password?
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Sign in Button */}
                   <Button
-                    title="LOGIN"
+                    title="Sign In"
+                    progress={isVisible}
                     disable={!isValid}
                     onPress={() => handleSubmit()}
+                  />
+
+                  {/* Divider */}
+                  <Label title="- OR -" containerStyle={{ marginTop: 10 }} />
+
+                  {/* Social Login Button */}
+                  <Button
+                    title="Sign in via Facebook"
+                    containerStyles={styles.buttonContainer}
+                    titleStyles={styles.buttonText}
+                    iconName={"logo-facebook"}
+                    onPress={() => console.log("Login with facebook action")}
+                  />
+
+                  <Button
+                    title="Sign in via Google"
+                    containerStyles={styles.buttonContainer}
+                    titleStyles={styles.buttonText}
+                    iconName={"logo-google"}
+                    onPress={() => console.log("Login with google action")}
                   />
                 </View>
               )}
             </Formik>
+
+            {/* Sign-up button */}
+            <View
+              style={{
+                marginTop: `${deviceHeight * 0.025}%`,
+              }}
+            >
+              <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
+                Don't have an account yet?
+              </Text>
+              <TouchableOpacity
+                onPress={() => console.log("Sign Up action button")}
+              >
+                <Text
+                  style={[
+                    styles.buttonText,
+                    { fontWeight: "bold", alignSelf: "center" },
+                  ]}
+                >
+                  {" "}
+                  Sign Up
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View
+              style={{
+                marginTop: `${deviceHeight * 0.025}%`,
+              }}
+            >
+              <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
+                @2023 Try & Review, All Rights Reserved.
+              </Text>
+            </View>
           </View>
         </View>
       </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -159,7 +223,7 @@ export default Login;
 const styles = StyleSheet.create({
   mainBackground: {
     backgroundColor: COLORS.white,
-    height: deviceHeight,
+    flex: 1,
   },
   imageContainer: {
     margin: 20,
@@ -172,14 +236,13 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   container: {
-    flex: 1,
+    height: deviceHeight / 2,
     width: deviceWidth * 0.9,
     marginVertical: deviceHeight * 0.2,
     borderRadius: 10,
     backgroundColor: COLORS.white,
     alignItems: "center",
     justifyContent: "center",
-    mainContainer: {},
     alignSelf: "center",
     shadowColor: COLORS.solidBlack,
     shadowOffset: {
@@ -188,10 +251,10 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 2,
+    elevation: 3,
   },
   headerContainer: {
-    padding: 10,
+    paddingVertical: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -204,13 +267,29 @@ const styles = StyleSheet.create({
   fieldContainer: {
     flex: 1,
     alignItems: "center",
-    // marginBottom: deviceHeight * 0.25,
   },
-  blankContainer: {
-    flex: 0.8,
+  forgotPasswordText: {
+    fontWeight: "600",
+    textDecorationLine: "underline",
+    color: COLORS.primary,
+    fontSize: 13,
   },
-  inputField: {
-    fontSize: 16,
-    marginLeft: 12,
+  forgotPasswordContainer: {
+    alignItems: "flex-start",
+    alignSelf: "flex-start",
+    marginBottom: 15,
+    marginTop: -10,
+  },
+  buttonContainer: {
+    backgroundColor: COLORS.buttonBackground,
+    marginTop: 10,
+    borderColor: COLORS.primary,
+    borderWidth: 0.5,
+    flexDirection: "row",
+  },
+  buttonText: {
+    color: COLORS.primary,
+    fontSize: 12,
+    marginStart: 5,
   },
 });

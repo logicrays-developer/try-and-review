@@ -1,28 +1,51 @@
-import React from 'react';
+import React from "react";
 import {
   Text,
   TouchableOpacity,
   StyleSheet,
   Button as ReactButton,
-} from 'react-native';
-import {COLORS} from '../styles';
-import {deviceHeight, deviceWidth} from '../utils/Dimension';
+  ActivityIndicator,
+} from "react-native";
+import { COLORS } from "../styles";
+import { deviceWidth } from "../utils/Dimension";
+import Icon from "react-native-vector-icons/Ionicons";
 
 type ButtonProps = React.ComponentPropsWithRef<typeof ReactButton> & {
   title: string;
   disable?: boolean;
   onPress: () => void;
+  containerStyles?: object;
+  titleStyles?: object;
+  iconName?: string;
+  progress?: boolean;
 };
 
-export const Button = ({title, disable, onPress}: ButtonProps) => {
+export const Button = ({
+  title,
+  disable,
+  onPress,
+  containerStyles,
+  titleStyles,
+  iconName,
+  progress,
+}: ButtonProps) => {
   return (
     <TouchableOpacity
       style={[
         styles.container,
-        {backgroundColor: disable ? COLORS.darkGrey : COLORS.primary},
+        { backgroundColor: disable ? COLORS.primary : COLORS.lightGreen },
+        containerStyles,
       ]}
-      onPress={onPress}>
-      <Text style={styles.title}>{title}</Text>
+      disabled={disable}
+      activeOpacity={0.8}
+      onPress={onPress}
+    >
+      {iconName && <Icon name={iconName} size={16} />}
+      {progress ? (
+        <ActivityIndicator size={"small"} color={COLORS.primary} />
+      ) : (
+        <Text style={[styles.title, titleStyles]}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 };
@@ -31,15 +54,15 @@ const styles = StyleSheet.create({
   container: {
     width: deviceWidth * 0.7,
     borderRadius: 5,
-    height: 42,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
+    height: 38,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
     opacity: 0.9,
   },
   title: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

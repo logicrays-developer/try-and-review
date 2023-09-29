@@ -4,6 +4,7 @@ export type MainStackParams = {
   Profile: undefined;
   Form: undefined;
   Reward: undefined;
+  Success: undefined;
 };
 
 export type AuthStackParams = {

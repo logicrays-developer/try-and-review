@@ -1,6 +1,6 @@
 export const COLORS = {
   lightDark: "#505768",
-  primary: "#E12D6E",
+  primary: "#f97a02",
   solidBlack: "#000000",
   white: "#FFFFFF",
   pista: "#BBDABB",
@@ -18,4 +18,7 @@ export const COLORS = {
   danceCard: "#FEF9E4",
   travelCard: "#FCF0E7",
   placeText: "#99a1ac",
+  buttonBackground: "#fbf8e8",
+  background: "#4002e9",
+  lightBackground: "#5d3be9",
 };

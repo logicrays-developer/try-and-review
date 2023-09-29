@@ -1,7 +1,10 @@
 export type TUserProps = {
   isExistingUser: boolean;
-  status: 'idle' | 'error' | 'loading';
-  favourites: any
+  status: "idle" | "error" | "loading";
+  userData: object;
+  accessToken: string;
+  refreshToken: string;
+  isExistingUser: boolean;
 };
 
 export type TStateData = {

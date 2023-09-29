@@ -1,14 +1,27 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {TUserProps} from '../typings/SliceData';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { TUserProps } from "../typings/SliceData";
+import axiosInstance from "../Config/Axios/axiosInstance";
 
 const initialState: TUserProps = {
   isExistingUser: false,
-  status: 'loading',
-  favourites: [],
+  status: "loading",
+  userData: {},
+  accessToken: "",
+  refreshToken: "",
 };
 
+// export const updateAccessToken = createAsyncThunk(
+//   "updateToken",
+//   async (tokens: any) => {
+//     const response = await axiosInstance.post("/token/refresh/", {
+//       refresh: tokens,
+//     });
+//     return response?.data?.access;
+//   }
+// );
+
 const authSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: initialState,
   reducers: {
     setStatus(state, action) {
@@ -17,19 +30,14 @@ const authSlice = createSlice({
     setExistingUser(state, action) {
       state.isExistingUser = action.payload;
     },
-    setAddToFavourites(state, action) {
-      let fav = state.favourites;
-      fav.push(action.payload);
-      state.favourites = [...fav];
+    setUserData(state, action) {
+      state.userData = action?.payload;
     },
-    setRemoveFromFavourites(state, action) {
-      let fav = state.favourites;
-      state.favourites = fav.filter((item: any) => {
-        return item.id.value != action.payload.id.value;
-      });
+    setAccessToken(state, action) {
+      state.accessToken = action.payload;
     },
-    resetFavourites(state, action) {
-      state.favourites = [];
+    setRefreshToken(state, action) {
+      state.refreshToken = action.payload;
     },
   },
 });
@@ -37,9 +45,9 @@ const authSlice = createSlice({
 export const {
   setExistingUser,
   setStatus,
-  setAddToFavourites,
-  setRemoveFromFavourites,
-  resetFavourites,
+  setUserData,
+  setAccessToken,
+  setRefreshToken,
 } = authSlice.actions;
 
 export default authSlice.reducer;
