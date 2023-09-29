@@ -8,7 +8,7 @@ const MainStackNavigator = createStackNavigator<MainStackParams>();
 export const Main = () => {
   return (
     <MainStackNavigator.Navigator
-      initialRouteName="Form"
+      initialRouteName="Home"
       screenOptions={{ headerShown: false }}
     >
       <MainStackNavigator.Screen name="Home" component={Home} />

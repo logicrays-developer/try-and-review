@@ -19,4 +19,6 @@ export const COLORS = {
   travelCard: "#FCF0E7",
   placeText: "#99a1ac",
   buttonBackground: "#fbf8e8",
+  background: "#4002e9",
+  lightBackground: "#5d3be9",
 };

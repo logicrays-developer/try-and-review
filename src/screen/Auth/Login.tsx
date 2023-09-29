@@ -18,8 +18,10 @@ import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
 import { setExistingUser } from "../../redux/slice";
 import * as Keychain from "react-native-keychain";
+import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
+  const navigation: object | any = useNavigation();
   const passwordRef: object | any = createRef();
   const [visibleInput, setVisibleInput] = useState<boolean>(true);
   const dispatch = useDispatch();
@@ -36,8 +38,8 @@ const Login = () => {
 
   const onLoginPress = async (email: string, password: string) => {
     if (
-      email.toLowerCase() === "reactnative@jetdevs.com" &&
-      password === "jetdevs@123"
+      email.toLowerCase() === "lr.testdemo@gmail.com" &&
+      password === "test@123"
     ) {
       dispatch(setExistingUser(true));
       await Keychain.setGenericPassword(
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
   headerContainer: {
     paddingVertical: 5,
