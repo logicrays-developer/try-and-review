@@ -1,39 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { TStateData } from "../typings/SliceData";
-import { Auth } from "./Auth";
-import { Main } from "./Main";
-import { setExistingUser } from "../redux/slice";
-import { Loader } from "../components";
-import * as Keychain from "react-native-keychain";
-import { UserCredentials } from "react-native-keychain";
+import { createStackNavigator } from "@react-navigation/stack";
+import Login from "../screen/Auth/Login";
+import { Form, Home, Profile, Success } from "../screen/Main";
+
+const Stack = createStackNavigator();
 
 const AppRouter = () => {
-  // import global state by useSelector
-  const { isExistingUser } = useSelector((state: TStateData) => state.user);
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // check for user already logged in
-    getUserFromLocal();
-  }, []);
-
-  const getUserFromLocal = async () => {
-    let dataStored: false | UserCredentials =
-      await Keychain.getGenericPassword();
-    const username: string = dataStored ? dataStored.username : "";
-    let user = username ? JSON.parse(username) : null;
-    if (user) {
-      dispatch(setExistingUser(true));
-    }
-    setLoading(false);
-  };
+  const { accessToken } = useSelector((state: TStateData) => state.user);
 
   return (
     <NavigationContainer>
-      {loading ? <Loader /> : !isExistingUser ? <Main /> : <Auth />}
+      <Stack.Navigator
+        screenOptions={() => ({
+          headerShown: false,
+        })}
+        initialRouteName={accessToken ? "Home" : "Login"}
+      >
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Form" component={Form} />
+        <Stack.Screen name="Success" component={Success} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
