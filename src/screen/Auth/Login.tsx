@@ -5,25 +5,26 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
-  Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import { Button, Label } from "../../components";
-import { CustomTextInput } from "../../components";
+import { Button, Label } from "../../components/index";
+import { CustomTextInput } from "../../components/index";
 import { Formik } from "formik";
 import { object, string } from "yup";
 import { COLORS } from "../../styles";
 import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
-import { setExistingUser } from "../../redux/slice";
 import * as Keychain from "react-native-keychain";
 import { useNavigation } from "@react-navigation/native";
+import { makeAuthenticatedPostRequest } from "../../Config/Axios";
+import { setAccessToken, setRefreshToken } from "../../slices/userSlice";
 
 const Login = () => {
   const navigation: object | any = useNavigation();
   const passwordRef: object | any = createRef();
   const [visibleInput, setVisibleInput] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
   const dispatch = useDispatch();
   const emailRegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -37,21 +38,29 @@ const Login = () => {
   });
 
   const onLoginPress = async (email: string, password: string) => {
-    if (
-      email.toLowerCase() === "lr.testdemo@gmail.com" &&
-      password === "test@123"
-    ) {
-      dispatch(setExistingUser(true));
-      await Keychain.setGenericPassword(
-        JSON.stringify(email),
-        JSON.stringify(password)
-      );
+    setIsVisible(true);
+    const params = {
+      username: email,
+      password: password,
+    };
+    const data = await dispatch(
+      makeAuthenticatedPostRequest("/api/app/login", params)
+    );
+    if (data.status == 200) {
+      dispatch(setAccessToken(data?.data?.token));
+      dispatch(setRefreshToken(data?.data?.refresh_token));
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "Home",
+          },
+        ],
+      });
+      setIsVisible(false);
     } else {
-      Alert.alert(
-        "User unauthorized ",
-        "Please enter valid user's credential",
-        [{ text: "OK", onPress: () => {} }]
-      );
+      setIsVisible(false);
     }
   };
 
@@ -141,6 +150,7 @@ const Login = () => {
                   {/* Sign in Button */}
                   <Button
                     title="Sign In"
+                    progress={isVisible}
                     disable={!isValid}
                     onPress={() => handleSubmit()}
                   />

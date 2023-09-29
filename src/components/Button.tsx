@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Button as ReactButton,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "../styles";
 import { deviceWidth } from "../utils/Dimension";
@@ -16,6 +17,7 @@ type ButtonProps = React.ComponentPropsWithRef<typeof ReactButton> & {
   containerStyles?: object;
   titleStyles?: object;
   iconName?: string;
+  progress?: boolean;
 };
 
 export const Button = ({
@@ -25,6 +27,7 @@ export const Button = ({
   containerStyles,
   titleStyles,
   iconName,
+  progress,
 }: ButtonProps) => {
   return (
     <TouchableOpacity
@@ -38,7 +41,11 @@ export const Button = ({
       onPress={onPress}
     >
       {iconName && <Icon name={iconName} size={16} />}
-      <Text style={[styles.title, titleStyles]}>{title}</Text>
+      {progress ? (
+        <ActivityIndicator size={"small"} color={COLORS.primary} />
+      ) : (
+        <Text style={[styles.title, titleStyles]}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 };
