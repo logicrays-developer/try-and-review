@@ -4,13 +4,13 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
-  ScrollView,
   Image,
-  SectionList,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { COLORS } from "../../styles";
 import { IMAGES } from "../../utils/ImageSource";
+import { deviceWidth } from "../../utils/Dimension";
 
 const surveyData = [
   {
@@ -66,6 +66,85 @@ const surveyData = [
 ];
 
 export const Home = () => {
+  const renderHeader = () => {
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Completed surveys counts */}
+        <View style={styles.surveyCountContainer}>
+          <View>
+            <Text style={styles.completedSurveysCountText}>15</Text>
+          </View>
+          <View
+            style={{
+              alignSelf: "flex-end",
+            }}
+          >
+            <Text style={styles.divisionText}>/</Text>
+          </View>
+          <View style={styles.outOfMainContainer}>
+            <View style={styles.outOfCountContainer}>
+              <Text style={styles.surveysText}>Surveys</Text>
+            </View>
+            <View>
+              <Text style={styles.totalOfCountText}>100</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Surveys description */}
+        <View style={styles.surveysDescriptionContainer}>
+          <Text
+            style={{
+              textAlign: "justify",
+              color: COLORS.lightDark,
+              fontSize: 13,
+            }}
+          >
+            Surveys can be used for a variety of purchase such on market
+            resource publish and optimize serves, social and research program
+            evolutions
+          </Text>
+        </View>
+
+        {/* Surveys reviews */}
+        <View style={styles.surveyReviewContainer}>
+          <Image
+            source={{
+              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
+            }}
+            style={styles.imageReview}
+            resizeMode="contain"
+          />
+          <Text style={styles.descriptionText}>
+            <Text style={{ fontSize: 13 }}>
+              Featured respondent for the month of May 2023!
+            </Text>
+          </Text>
+        </View>
+
+        <Text style={{ marginTop: 20, marginBottom: 10, fontWeight: "bold" }}>
+          Try and Review Community Surveys
+        </Text>
+      </View>
+    );
+  };
+
+  const reviewCard = (item: any) => {
+    return (
+      <TouchableOpacity activeOpacity={0.5} style={{ padding: 8 }}>
+        <Image
+          source={{ uri: item?.item?.imgName }}
+          style={{
+            height: deviceWidth / 4 - 30,
+            width: deviceWidth / 4 - 30,
+            borderRadius: 10,
+          }}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -75,75 +154,26 @@ export const Home = () => {
           resizeMode="cover"
           tintColor={COLORS.lightBackground}
         />
-        <Text style={[styles.topText, { marginTop: 20 }]}>Hi Alexia</Text>
+        <Text style={[styles.topText, { marginTop: 20, fontWeight: "bold" }]}>
+          Hi Alexia
+        </Text>
         <Text style={[styles.topText, { marginTop: 5, fontSize: 14 }]}>
           Complete minimum of 10 surveys and question & stand a changes to win
           1,000 points this month.
         </Text>
       </View>
       <View style={styles.bottomContainer}>
-        <ScrollView
-          style={{ flex: 1 }}
-          nestedScrollEnabled={true}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Completed surveys counts */}
-          <View style={styles.surveyCountContainer}>
-            <View>
-              <Text style={styles.completedSurveysCountText}>15</Text>
-            </View>
-            <View
-              style={{
-                alignSelf: "flex-end",
-              }}
-            >
-              <Text style={styles.divisionText}>/</Text>
-            </View>
-            <View style={styles.outOfMainContainer}>
-              <View style={styles.outOfCountContainer}>
-                <Text style={styles.surveysText}>Surveys</Text>
-              </View>
-              <View>
-                <Text style={styles.totalOfCountText}>100</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Surveys description */}
-          <View style={styles.surveysDescriptionContainer}>
-            <Text
-              style={{
-                textAlign: "justify",
-                color: COLORS.lightDark,
-                fontSize: 13,
-              }}
-            >
-              Surveys can be used for a variety of purchase such on market
-              resource publish and optimize serves, social and research program
-              evolutions
-            </Text>
-          </View>
-
-          {/* Surveys reviews */}
-          <View style={styles.surveyReviewContainer}>
-            <Image
-              source={{
-                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
-              }}
-              style={styles.imageReview}
-              resizeMode="contain"
-            />
-            <Text style={styles.descriptionText}>
-              <Text style={{ fontSize: 13 }}>
-                Featured respondent for the month of May 2023!
-              </Text>
-            </Text>
-          </View>
-
-          <Text style={{ marginHorizontal: 30, marginTop: 20 }}>
-            Try and Review Community Surveys
-          </Text>
-        </ScrollView>
+        <View style={{ marginHorizontal: 30 }}>
+          <FlatList
+            keyExtractor={(item, index) => `card` + index.toString()}
+            data={surveyData}
+            renderItem={reviewCard}
+            ListEmptyComponent={null}
+            numColumns={4}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={renderHeader}
+          />
+        </View>
       </View>
     </View>
   );
@@ -202,11 +232,10 @@ const styles = StyleSheet.create({
   },
   surveysText: { color: COLORS.white, fontSize: 12 },
   totalOfCountText: { fontSize: 20, color: "#55505e", fontWeight: "500" },
-  surveysDescriptionContainer: { marginTop: 20, marginHorizontal: 30 },
+  surveysDescriptionContainer: { marginTop: 20 },
   surveyReviewContainer: {
     marginTop: 25,
     borderRadius: 20,
-    marginHorizontal: 30,
     flexDirection: "row",
     flex: 1,
     overflow: "hidden",
@@ -219,5 +248,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 20,
   },
-  descriptionText: { flex: 2, alignSelf: "center", marginHorizontal: 10 },
+  descriptionText: {
+    flex: 2,
+    alignSelf: "center",
+    marginHorizontal: 10,
+  },
 });
