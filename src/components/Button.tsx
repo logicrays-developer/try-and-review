@@ -17,7 +17,7 @@ type ButtonProps = React.ComponentPropsWithRef<typeof ReactButton> & {
   containerStyles?: object;
   titleStyles?: object;
   iconName?: string;
-  progress?: boolean;
+  isProgress?: boolean;
 };
 
 export const Button = ({
@@ -27,7 +27,7 @@ export const Button = ({
   containerStyles,
   titleStyles,
   iconName,
-  progress,
+  isProgress,
 }: ButtonProps) => {
   return (
     <TouchableOpacity
@@ -41,8 +41,8 @@ export const Button = ({
       onPress={onPress}
     >
       {iconName && <Icon name={iconName} size={16} />}
-      {progress ? (
-        <ActivityIndicator size={"small"} color={COLORS.primary} />
+      {isProgress ? (
+        <ActivityIndicator color={COLORS.white} size={"small"} />
       ) : (
         <Text style={[styles.title, titleStyles]}>{title}</Text>
       )}

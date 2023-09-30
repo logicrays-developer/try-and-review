@@ -18,6 +18,7 @@ export const Label = ({
     <TouchableOpacity
       style={[styles.container, containerStyle]}
       onPress={onPress}
+      disabled={onPress ? false : true}
     >
       <Text style={[styles.text, titleStyle]}>{title}</Text>
     </TouchableOpacity>
