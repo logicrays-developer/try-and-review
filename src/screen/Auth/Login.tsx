@@ -65,8 +65,8 @@ const Login = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.mainBackground} behavior="padding">
-      <SafeAreaView style={styles.mainBackground}>
+    <SafeAreaView style={styles.mainBackground}>
+      <KeyboardAvoidingView style={styles.mainBackground} behavior="padding">
         {/* Image container */}
         <TouchableOpacity activeOpacity={0.6} style={styles.imageContainer}>
           <Image
@@ -213,8 +213,8 @@ const Login = () => {
             </View>
           </View>
         </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

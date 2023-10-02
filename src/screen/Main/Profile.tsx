@@ -7,19 +7,38 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
 
 export const Profile = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    fetch(`https://preprod.tryandreview.com/api/app/login`, {
+      method: "POST",
+      headers: {
+        contentType: "json",
+      },
+      body: JSON.stringify({
+        username: "tryandreview_uat",
+        password: "UATuser@tryandreview1",
+      }),
+    })
+      // fetch(`https://preprod.tryandreview.com/api/app/in/users/profile`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((e) => console.log("Error: ", e.message));
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* App header */}
