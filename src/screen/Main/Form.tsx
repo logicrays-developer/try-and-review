@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   Alert,
+  Dimensions,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,14 +18,24 @@ import { Dropdown } from "react-native-element-dropdown";
 import DatePicker from "react-native-date-picker";
 import MaterialComminityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import ImagePicker from "react-native-image-crop-picker";
+import Modal from "react-native-modal";
+import {
+  requestMultiple,
+  PERMISSIONS,
+  RESULTS,
+  request,
+} from "react-native-permissions";
+
+const { height, width } = Dimensions.get("screen");
 
 export const Form = () => {
   const navigation = useNavigation();
   const [ref, setRef] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [dateModalIndex, setDateModalIndex] = useState<null | Number>(null);
-  const [activeTextInputIndex, setActiveTextInputIndex] =
-    useState<null | Number>(null);
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState<null | Number>(
+    null
+  );
   const [questionArr, setQuestionArr] = useState([
     {
       id: 355,
@@ -460,6 +472,109 @@ export const Form = () => {
   //   getQuestions();
   // }, []);
 
+  const requestCameraPermission = async () => {
+    const granted = await request(
+      Platform.OS === "ios"
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA
+    );
+    if (granted === RESULTS.GRANTED) {
+      return true;
+    } else {
+      Alert.alert(
+        "Permission Required",
+        "Please give permission to access Camera from settings.",
+        [
+          {
+            text: "Okay",
+            onPress: () => {},
+          },
+        ]
+      );
+      return false;
+    }
+  };
+
+  const requestStoragePermission = async () => {
+    const granted = await requestMultiple(
+      Platform.OS === "ios"
+        ? [PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.MEDIA_LIBRARY]
+        : [
+            PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
+            PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+          ]
+    );
+    console.log("Permission here----", granted);
+    if (
+      granted["android.permission.READ_MEDIA_IMAGES"] === RESULTS.GRANTED &&
+      granted["android.permission.READ_MEDIA_VIDEO"] === RESULTS.GRANTED
+    ) {
+      return true;
+    } else {
+      Alert.alert(
+        "Permission Required",
+        "Please give permission to access Read-Write Storage from settings.",
+        [
+          {
+            text: "Okay",
+            onPress: () => {},
+          },
+        ]
+      );
+      return false;
+    }
+  };
+
+  const onImagePickerPress = async () => {
+    let checkPermission = await requestStoragePermission();
+    if (checkPermission) {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: false,
+        includeBase64: true,
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
+  const onImageCameraPress = async () => {
+    let checkPermission = await requestCameraPermission();
+    if (checkPermission) {
+      ImagePicker.openCamera({
+        width: 300,
+        height: 400,
+        cropping: false,
+        includeBase64: true,
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
+  const onVideoPickerPress = async () => {
+    let checkPermission = await requestStoragePermission();
+    if (checkPermission) {
+      ImagePicker.openPicker({
+        mediaType: "video",
+      }).then((video) => {
+        console.log(video);
+      });
+    }
+  };
+
+  const onVideoCameraPress = async () => {
+    let checkPermission = await requestCameraPermission();
+    if (checkPermission) {
+      ImagePicker.openCamera({
+        mediaType: "video",
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
   const _renderAnswer = (data: any, qIndex: number) => {
     switch (data.question.answer_type) {
       case "select":
@@ -565,7 +680,7 @@ export const Form = () => {
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
@@ -576,10 +691,10 @@ export const Form = () => {
             keyboardType="number-pad"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
               data.question.ans = val;
@@ -594,7 +709,7 @@ export const Form = () => {
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
@@ -605,10 +720,10 @@ export const Form = () => {
             keyboardType="email-address"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
               data.question.ans = val;
@@ -623,7 +738,7 @@ export const Form = () => {
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
@@ -634,10 +749,10 @@ export const Form = () => {
             keyboardType="email-address"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
               data.question.ans = val;
@@ -652,7 +767,7 @@ export const Form = () => {
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
@@ -663,10 +778,10 @@ export const Form = () => {
             keyboardType="email-address"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
               data.question.ans = val;
@@ -681,7 +796,7 @@ export const Form = () => {
               styles.multiLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
@@ -693,10 +808,10 @@ export const Form = () => {
             keyboardType="default"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
               data.question.ans = val;
@@ -734,7 +849,7 @@ export const Form = () => {
               size={25}
               color={COLORS.solidBlack}
               onPress={() => {
-                setDateModalIndex(qIndex);
+                setActiveQuestionIndex(qIndex);
               }}
             />
             <View style={styles.dateDetails}>
@@ -746,17 +861,17 @@ export const Form = () => {
             </View>
             <DatePicker
               modal
-              open={dateModalIndex === qIndex}
+              open={activeQuestionIndex === qIndex}
               date={data.question.ans ? data.question.ans : today}
               mode="date"
               onConfirm={(date) => {
-                setDateModalIndex(null);
+                setActiveQuestionIndex(null);
                 data.question.ans = date;
                 setQuestionArr(questionArr);
                 setRef(!ref);
               }}
               onCancel={() => {
-                setDateModalIndex(null);
+                setActiveQuestionIndex(null);
               }}
             />
           </View>
@@ -764,7 +879,12 @@ export const Form = () => {
       case "image":
         return (
           <View>
-            <TouchableOpacity style={styles.fileUploadContainer}>
+            <TouchableOpacity
+              style={styles.fileUploadContainer}
+              onPress={() => {
+                setActiveQuestionIndex(qIndex);
+              }}
+            >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialComminityIcons
                   name="plus"
@@ -774,12 +894,70 @@ export const Form = () => {
                 <Text style={styles.MultipleChoiceText}>Image</Text>
               </View>
             </TouchableOpacity>
+            <Modal
+              isVisible={activeQuestionIndex === qIndex}
+              backdropOpacity={0.8}
+              backdropColor={COLORS.darkGrey}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.headerText}>Choose image from</Text>
+                <View style={styles.pickerOptionsContainer}>
+                  <TouchableOpacity
+                    style={[styles.booleanOption]}
+                    onPress={() => {
+                      onImageCameraPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Camera
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.booleanOption}
+                    onPress={() => {
+                      onImagePickerPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Gallery
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={[styles.nextButton, { marginTop: 20 }]}
+                  onPress={() => {
+                    setActiveQuestionIndex(null);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
           </View>
         );
       case "video":
         return (
           <View>
-            <TouchableOpacity style={styles.fileUploadContainer}>
+            <TouchableOpacity
+              style={styles.fileUploadContainer}
+              onPress={() => {
+                setActiveQuestionIndex(qIndex);
+              }}
+            >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialComminityIcons
                   name="plus"
@@ -789,6 +967,59 @@ export const Form = () => {
                 <Text style={styles.MultipleChoiceText}>Video</Text>
               </View>
             </TouchableOpacity>
+            <Modal
+              isVisible={activeQuestionIndex === qIndex}
+              backdropOpacity={0.8}
+              backdropColor={COLORS.darkGrey}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.headerText}>Choose video from</Text>
+                <View style={styles.pickerOptionsContainer}>
+                  <TouchableOpacity
+                    style={[styles.booleanOption]}
+                    onPress={() => {
+                      onVideoCameraPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Camera
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.booleanOption}
+                    onPress={() => {
+                      onVideoPickerPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Gallery
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={[styles.nextButton, { marginTop: 20 }]}
+                  onPress={() => {
+                    setActiveQuestionIndex(null);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
           </View>
         );
       case "rating":
@@ -1102,5 +1333,24 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#F97A02",
     borderRadius: 8,
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  modalContainer: {
+    width: width * 0.8,
+    alignSelf: "center",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.white,
+  },
+  pickerOptionsContainer: {
+    marginTop: 20,
+    height: 70,
+    justifyContent: "space-between",
   },
 });
