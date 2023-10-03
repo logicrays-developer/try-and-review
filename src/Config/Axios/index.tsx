@@ -22,10 +22,9 @@ const language = {
  */
 
 export const makeAuthenticatedGetRequest = (url: string): any => {
-  console.log("url -----", url);
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
-    console.log("Access-Token GET Request---->", url);
+    console.log("Access-Token GET Request---->", state?.user?.accessToken);
     return new Promise((resolve, reject) => {
       axiosInstance
         .get(url, {

@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { TStateData } from "../typings/SliceData";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screen/Auth/Login";
-import { Form, Home, Profile, Success } from "../screen/Main";
+import { Form, Home, Profile, Reward, Success } from "../screen/Main";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +23,7 @@ const AppRouter = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Form" component={Form} />
+        <Stack.Screen name="Reward" component={Reward} />
         <Stack.Screen name="Success" component={Success} />
       </Stack.Navigator>
     </NavigationContainer>

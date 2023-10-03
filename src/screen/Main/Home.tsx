@@ -12,8 +12,9 @@ import { COLORS } from "../../styles";
 import { IMAGES } from "../../utils/ImageSource";
 import { deviceWidth } from "../../utils/Dimension";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeAuthenticatedGetRequest } from "../../Config/Axios";
+import { setUserData } from "../../slices/userSlice";
 
 const surveyData = [
   {
@@ -50,20 +51,23 @@ const surveyData = [
 
 export const Home = () => {
   const navigation: object | any = useNavigation();
+  const { userData } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const getAPI = async () => {
+    const getProfileData = async () => {
       try {
         const { data } = await dispatch(
-          makeAuthenticatedGetRequest("/api/app/survey/650db838123a4")
+          makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-
-        console.log("Data ----", data);
-      } catch (error) {}
+        dispatch(setUserData(data));
+      } catch (error) {
+        console.log("Error ", error);
+      }
     };
-    getAPI();
-  });
+
+    !userData && getProfileData();
+  }, []);
 
   const renderHeader = () => {
     return (
@@ -106,7 +110,11 @@ export const Home = () => {
         </View>
 
         {/* Surveys reviews */}
-        <View style={styles.surveyReviewContainer}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.surveyReviewContainer}
+          onPress={() => navigation?.navigate("Profile")}
+        >
           <Image
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
@@ -119,7 +127,7 @@ export const Home = () => {
               Featured respondent for the month of May 2023!
             </Text>
           </Text>
-        </View>
+        </TouchableOpacity>
 
         <Text style={{ marginTop: 20, marginBottom: 10, fontWeight: "bold" }}>
           Try and Review Community Surveys

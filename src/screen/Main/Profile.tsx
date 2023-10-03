@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   SafeAreaView,
   ScrollView,
@@ -7,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -17,9 +18,36 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { makeAuthenticatedGetRequest } from "../../Config/Axios";
+import { setUserData } from "../../slices/userSlice";
 
 export const Profile = () => {
-  const navigation = useNavigation();
+  const navigation: object | any = useNavigation();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state: any) => state.user);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { count_reviews, count_images, count_videos } =
+    userData?._embedded?.aggregations;
+  const { completion_pourcentage } = userData?._embedded;
+  const { first_name, last_name, pictures, email } = userData;
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
+        const { data } = await dispatch(
+          makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
+        );
+        dispatch(setUserData(data));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log("Error ", error);
+      }
+    };
+
+    getProfileData();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* App header */}
@@ -36,183 +64,201 @@ export const Profile = () => {
         </TouchableOpacity>
       </View>
       {/* Profile Content */}
-      <ScrollView>
-        {/* User Content */}
-        <View style={styles.contentView}>
-          <Text style={[styles.titleText, { paddingVertical: 10 }]}>
-            My Profile
-          </Text>
-          <View style={{ flexDirection: "row", flex: 1 }}>
-            <View style={{ padding: 5 }}>
-              <FontAwesome6
-                name="user"
-                size={40}
-                color={"#283671"}
-                style={{ padding: 5 }}
-              />
-            </View>
-            <View style={{ paddingHorizontal: 10, flex: 1 }}>
-              <Text style={[styles.titleText, { fontSize: 14 }]}>
-                Hardik Parmar
-              </Text>
-              <Text style={[styles.titleText, { color: "gray", fontSize: 12 }]}>
-                @hardikparmar
-              </Text>
-              <Progress.Bar
-                progress={0.7}
-                color="#4500E7"
-                style={{ marginTop: 7 }}
-                height={7}
-              />
-              <Text style={{ color: "gray", fontSize: 12, paddingVertical: 3 }}>
-                {70}% profile completed
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginVertical: 15,
-            }}
-          >
-            <View style={styles.boxView}>
-              <Text style={styles.boxText}>Verify email</Text>
-            </View>
-            <View style={styles.boxView}>
-              <Text style={styles.boxText}>Verify phone number</Text>
-            </View>
-            <View style={styles.boxView}>
-              <Text style={styles.boxText}>View profile</Text>
-            </View>
-          </View>
+      {loading ? (
+        <View style={styles.headerContainer}>
+          <ActivityIndicator size={"small"} color={"#F97A02"} />
         </View>
-        <View style={styles.separator} />
-        {/* Extra */}
-        <View style={styles.contentView}>
-          <Text style={[styles.titleText, { paddingVertical: 10 }]}>
-            My Contributions
-          </Text>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              marginVertical: 15,
-            }}
-          >
-            <View style={styles.iconView}>
-              <View style={styles._viewBox}>
-                <Text style={styles.buttonText}>1</Text>
+      ) : (
+        <ScrollView>
+          {/* User Content */}
+          <View style={styles.contentView}>
+            <Text style={[styles.titleText, { paddingVertical: 10 }]}>
+              My Profile
+            </Text>
+            <View style={{ flexDirection: "row", flex: 1 }}>
+              <View style={{ padding: 5 }}>
+                {!pictures ? (
+                  <FontAwesome6
+                    name="user"
+                    size={40}
+                    color={"#283671"}
+                    style={{ padding: 5 }}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: pictures }}
+                    style={{ height: 40, width: 40, borderRadius: 20 }}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
+              <View style={{ paddingHorizontal: 10, flex: 1 }}>
+                <Text style={[styles.titleText, { fontSize: 14 }]}>
+                  {first_name + " " + last_name}
+                </Text>
+                <Text
+                  style={[styles.titleText, { color: "gray", fontSize: 12 }]}
+                >
+                  {email}
+                </Text>
+                <Progress.Bar
+                  progress={completion_pourcentage / 100}
+                  color="#4500E7"
+                  style={{ marginTop: 7 }}
+                  height={7}
+                />
+                <Text
+                  style={{ color: "gray", fontSize: 12, paddingVertical: 3 }}
+                >
+                  {completion_pourcentage} % profile completed
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginVertical: 15,
+              }}
+            >
+              <View style={styles.boxView}>
+                <Text style={styles.boxText}>Verify email</Text>
+              </View>
+              <View style={styles.boxView}>
+                <Text style={styles.boxText}>Verify phone number</Text>
+              </View>
+              <View style={styles.boxView}>
+                <Text style={styles.boxText}>View profile</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.separator} />
+          {/* Extra */}
+          <View style={styles.contentView}>
+            <Text style={[styles.titleText, { paddingVertical: 10 }]}>
+              My Contributions
+            </Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                marginVertical: 15,
+              }}
+            >
+              <View style={styles.iconView}>
+                <View style={styles._viewBox}>
+                  <Text style={styles.buttonText}>{count_reviews}</Text>
+                  <Text style={styles.buttonText}>Survey</Text>
+                </View>
+                <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+              </View>
+              <View style={styles.iconView}>
+                <View style={styles._viewBox}>
+                  <Text style={styles.buttonText}>{count_images}</Text>
+                  <Text style={styles.buttonText}>Pictures</Text>
+                </View>
+                <FontAwesome name="camera" size={40} color={"#4500E7"} />
+              </View>
+              <View style={styles.iconView}>
+                <View style={styles._viewBox}>
+                  <Text style={styles.buttonText}>{count_videos}</Text>
+                  <Text style={styles.buttonText}>Videos</Text>
+                </View>
+                <FontAwesome name="video-camera" size={40} color={"#4500E7"} />
+              </View>
+            </View>
+          </View>
+          <View style={styles.separator} />
+          {/* New extra data */}
+          <View style={styles.contentView}>
+            <Text style={[styles.titleText, { paddingVertical: 10 }]}>
+              My Badges
+            </Text>
+            <Text style={[styles.titleText, { color: "gray", fontSize: 12 }]}>
+              Unlock your badges by leaving comments and publishing pictures and
+              videos
+            </Text>
+
+            <View style={styles.bottonsContainer}>
+              <View style={{ alignItems: "center" }}>
+                <View style={styles.button}>
+                  <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+                </View>
                 <Text style={styles.buttonText}>Survey</Text>
               </View>
-              <MaterialIcons name="edit" size={40} color={"#4500E7"} />
-            </View>
-            <View style={styles.iconView}>
-              <View style={styles._viewBox}>
-                <Text style={styles.buttonText}>0</Text>
+
+              <View style={{ alignItems: "center" }}>
+                <View style={styles.button}>
+                  <MaterialCommunityIcons
+                    name="battery-plus-variant"
+                    size={40}
+                    color={"#4500E7"}
+                  />
+                </View>
+                <Text style={styles.buttonText}>Polls</Text>
+              </View>
+              <View style={{ alignItems: "center" }}>
+                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                  <Ionicons name="images" size={35} color={"gray"} />
+                </View>
                 <Text style={styles.buttonText}>Pictures</Text>
               </View>
-              <FontAwesome name="camera" size={40} color={"#4500E7"} />
-            </View>
-            <View style={styles.iconView}>
-              <View style={styles._viewBox}>
-                <Text style={styles.buttonText}>0</Text>
+              <View style={{ alignItems: "center" }}>
+                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                  <Ionicons name="play" size={35} color={"gray"} />
+                </View>
                 <Text style={styles.buttonText}>Videos</Text>
               </View>
-              <FontAwesome name="video-camera" size={40} color={"#4500E7"} />
             </View>
           </View>
-        </View>
-        <View style={styles.separator} />
-        {/* New extra data */}
-        <View style={styles.contentView}>
-          <Text style={[styles.titleText, { paddingVertical: 10 }]}>
-            My Badges
-          </Text>
-          <Text style={[styles.titleText, { color: "gray", fontSize: 12 }]}>
-            Unlock your badges by leaving comments and publishing pictures and
-            videos
-          </Text>
+          <View style={styles.separator} />
+          {/* free data */}
+          <View style={styles.contentView}>
+            <Text style={[styles.titleText, { paddingVertical: 10 }]}>
+              My Badges
+            </Text>
+            <Text style={[styles.titleText, { color: "gray", fontSize: 12 }]}>
+              Unlock your badges by leaving comments and publishing pictures and
+              videos
+            </Text>
 
-          <View style={styles.bottonsContainer}>
-            <View style={{ alignItems: "center" }}>
-              <View style={styles.button}>
-                <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+            <View style={styles.bottonsContainer}>
+              <View style={{ alignItems: "center" }}>
+                <View style={styles.button}>
+                  <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+                </View>
+                <Text style={styles.buttonText}>Survey</Text>
               </View>
-              <Text style={styles.buttonText}>Survey</Text>
-            </View>
 
-            <View style={{ alignItems: "center" }}>
-              <View style={styles.button}>
-                <MaterialCommunityIcons
-                  name="battery-plus-variant"
-                  size={40}
-                  color={"#4500E7"}
-                />
+              <View style={{ alignItems: "center" }}>
+                <View style={styles.button}>
+                  <MaterialCommunityIcons
+                    name="battery-plus-variant"
+                    size={40}
+                    color={"#4500E7"}
+                  />
+                </View>
+                <Text style={styles.buttonText}>Polls</Text>
               </View>
-              <Text style={styles.buttonText}>Polls</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
-                <Ionicons name="images" size={35} color={"gray"} />
+              <View style={{ alignItems: "center" }}>
+                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                  <Ionicons name="images" size={35} color={"gray"} />
+                </View>
+                <Text style={styles.buttonText}>Pictures</Text>
               </View>
-              <Text style={styles.buttonText}>Pictures</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
-                <Ionicons name="play" size={35} color={"gray"} />
+              <View style={{ alignItems: "center" }}>
+                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                  <Ionicons name="play" size={35} color={"gray"} />
+                </View>
+                <Text style={styles.buttonText}>Videos</Text>
               </View>
-              <Text style={styles.buttonText}>Videos</Text>
             </View>
           </View>
-        </View>
-        <View style={styles.separator} />
-        {/* free data */}
-        <View style={styles.contentView}>
-          <Text style={[styles.titleText, { paddingVertical: 10 }]}>
-            My Badges
-          </Text>
-          <Text style={[styles.titleText, { color: "gray", fontSize: 12 }]}>
-            Unlock your badges by leaving comments and publishing pictures and
-            videos
-          </Text>
-
-          <View style={styles.bottonsContainer}>
-            <View style={{ alignItems: "center" }}>
-              <View style={styles.button}>
-                <MaterialIcons name="edit" size={40} color={"#4500E7"} />
-              </View>
-              <Text style={styles.buttonText}>Survey</Text>
-            </View>
-
-            <View style={{ alignItems: "center" }}>
-              <View style={styles.button}>
-                <MaterialCommunityIcons
-                  name="battery-plus-variant"
-                  size={40}
-                  color={"#4500E7"}
-                />
-              </View>
-              <Text style={styles.buttonText}>Polls</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
-                <Ionicons name="images" size={35} color={"gray"} />
-              </View>
-              <Text style={styles.buttonText}>Pictures</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
-                <Ionicons name="play" size={35} color={"gray"} />
-              </View>
-              <Text style={styles.buttonText}>Videos</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.separator} />
-      </ScrollView>
+          <View style={styles.separator} />
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -282,5 +328,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#CDE9E1",
     justifyContent: "center",
     alignItems: "center",
+  },
+  headerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
 });
