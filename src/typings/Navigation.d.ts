@@ -3,6 +3,7 @@ export type MainStackParams = {
   Home: undefined;
   Profile: undefined;
   Form: undefined;
+  Reward: undefined;
   Success: undefined;
 };
 

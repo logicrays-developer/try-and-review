@@ -15,7 +15,6 @@ import { object, string } from "yup";
 import { COLORS } from "../../styles";
 import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
-import * as Keychain from "react-native-keychain";
 import { useNavigation } from "@react-navigation/native";
 import { makeAuthenticatedPostRequest } from "../../Config/Axios";
 import { setAccessToken, setRefreshToken } from "../../slices/userSlice";
@@ -24,7 +23,7 @@ const Login = () => {
   const navigation: object | any = useNavigation();
   const passwordRef: object | any = createRef();
   const [visibleInput, setVisibleInput] = useState<boolean>(true);
-  const [isVisible, setIsVisible] = useState(false);
+  const [visibleLoader, setVisibleLoader] = useState<boolean>(false);
   const dispatch = useDispatch();
   const emailRegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -38,29 +37,30 @@ const Login = () => {
   });
 
   const onLoginPress = async (email: string, password: string) => {
-    setIsVisible(true);
-    const params = {
-      username: email,
-      password: password,
-    };
-    const data = await dispatch(
-      makeAuthenticatedPostRequest("/api/app/login", params)
-    );
-    if (data.status == 200) {
-      dispatch(setAccessToken(data?.data?.token));
-      dispatch(setRefreshToken(data?.data?.refresh_token));
-
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Home",
-          },
-        ],
-      });
-      setIsVisible(false);
-    } else {
-      setIsVisible(false);
+    try {
+      setVisibleLoader(true);
+      const data = await dispatch(
+        makeAuthenticatedPostRequest("/api/app/login", {
+          username: email,
+          password: password,
+        })
+      );
+      if (data.status == 200) {
+        dispatch(setAccessToken(data?.data?.token));
+        dispatch(setRefreshToken(data?.data?.refresh_token));
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: "Home",
+            },
+          ],
+        });
+        return setVisibleLoader(false);
+      }
+    } catch (error) {
+      console.log("Error from login ---", error);
+      return setVisibleLoader(false);
     }
   };
 
@@ -93,9 +93,9 @@ const Login = () => {
               }}
               validateOnMount={true}
               validationSchema={formValidation}
-              onSubmit={(values: any) => {
-                onLoginPress(values.email, values.password);
-              }}
+              onSubmit={(values: any) =>
+                onLoginPress(values.email, values.password)
+              }
             >
               {({
                 handleChange,
@@ -150,8 +150,8 @@ const Login = () => {
                   {/* Sign in Button */}
                   <Button
                     title="Sign In"
-                    progress={isVisible}
                     disable={!isValid}
+                    isProgress={visibleLoader}
                     onPress={() => handleSubmit()}
                   />
 

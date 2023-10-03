@@ -1,9 +1,9 @@
-import { Alert } from "react-native";
 import { updateAccessToken } from "../../slices/userSlice";
 import axiosInstance from "./axiosInstance";
+import { showMessage } from "react-native-flash-message";
 
 const language = {
-  severForbiddenError: "You are not authorized to make this request.",
+  serverForbiddenError: "You are not authorized to make this request.",
   serverNotFoundError:
     "This data either does not exist or you are not authorized to view it.",
   serverRequestError:
@@ -49,26 +49,47 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
               case 401:
                 // await dispatch(updateAccessToken(state?.user?.refreshToken));
                 // const response = dispatch(makeAuthenticatedGetRequest(url));
-                Alert.alert("Warning", dataError?.message);
-                return resolve(error);
+                showMessage({
+                  message: dataError?.message,
+                  type: "danger",
+                });
+                return reject(error);
               case 403:
-                Alert.alert("Warning", language.severForbiddenError);
+                showMessage({
+                  message: language.serverForbiddenError,
+                  type: "danger",
+                });
                 return reject(error);
               case 404:
-                Alert.alert("Warning", language.serverNotFoundError);
+                showMessage({
+                  message: language.serverNotFoundError,
+                  type: "danger",
+                });
                 return reject(error);
               case 500:
-                Alert.alert("Warning", language.serverGenericError);
+                showMessage({
+                  message: language.serverGenericError,
+                  type: "danger",
+                });
                 return reject(error);
               default:
-                Alert.alert("Warning", language.generalError);
+                showMessage({
+                  message: language.generalError,
+                  type: "danger",
+                });
                 return reject(error);
             }
           } else if (error.request) {
-            Alert.alert("Warning", language.serverRequestError);
+            showMessage({
+              message: language.serverRequestError,
+              type: "danger",
+            });
             return reject(error);
           } else {
-            Alert.alert("Warning", language.serverGenericError);
+            showMessage({
+              message: language.serverGenericError,
+              type: "danger",
+            });
             return reject(error);
           }
         });
@@ -84,7 +105,7 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
 export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
-    console.log("Access-Token POST Request ---->", url, data);
+    console.log("Access-Token POST Request ---->", state?.user?.accessToken);
     return new Promise((resolve, reject) => {
       axiosInstance
         .post(url, data, {
@@ -107,34 +128,57 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
             const dataError: any = error.response.data;
             switch (status) {
               case 400:
-                Alert.alert("Warning", dataError?.message);
+                showMessage({
+                  message: dataError?.message,
+                  type: "danger",
+                });
                 return reject(error);
               case 401:
                 // await dispatch(updateAccessToken(state?.user?.refreshToken));
                 // const response = dispatch(
                 //   makeAuthenticatedPostRequest(url, data)
                 // );
-                Alert.alert("Warning", dataError?.message);
-                return resolve(error);
+                showMessage({
+                  message: dataError?.message,
+                  type: "danger",
+                });
+                return reject(error);
               case 403:
-                Alert.alert("Warning", language.severForbiddenError);
-                dataError?.detail[0];
+                showMessage({
+                  message: language.serverForbiddenError,
+                  type: "danger",
+                });
                 return reject(error);
               case 404:
-                Alert.alert("Warning", language.serverNotFoundError);
+                showMessage({
+                  message: language.serverNotFoundError,
+                  type: "danger",
+                });
                 return reject(error);
               case 500:
-                Alert.alert("Warning", language.serverGenericError);
+                showMessage({
+                  message: language.serverGenericError,
+                  type: "danger",
+                });
                 return reject(error);
               default:
-                Alert.alert("Warning", language.generalError);
+                showMessage({
+                  message: language.generalError,
+                  type: "danger",
+                });
                 return reject(error);
             }
           } else if (error.request) {
-            Alert.alert("Warning", language.serverRequestError);
+            showMessage({
+              message: language.serverRequestError,
+              type: "danger",
+            });
             return reject(error);
           } else {
-            Alert.alert("Warning", language.serverGenericError);
+            showMessage({
+              message: language.serverGenericError,
+              type: "danger",
+            });
             return reject(error);
           }
         });
