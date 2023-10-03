@@ -519,6 +519,7 @@ export const Form = () => {
               name="keyboard-backspace"
               size={25}
               color={COLORS.solidBlack}
+              onPress={() => navigation?.goBack()}
             />
             <View style={styles.headerContainer}>
               <Text style={styles.headerText}>Application</Text>

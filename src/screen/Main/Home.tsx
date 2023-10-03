@@ -11,61 +11,44 @@ import {
 import { COLORS } from "../../styles";
 import { IMAGES } from "../../utils/ImageSource";
 import { deviceWidth } from "../../utils/Dimension";
+import { useNavigation } from "@react-navigation/native";
 
 const surveyData = [
   {
-    id: 1,
+    id: "650db838123a4",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
   {
-    id: 2,
+    id: "610a238e664c2",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
   {
-    id: 3,
+    id: "60e6d3395efbe",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
   {
-    id: 4,
+    id: "63c03b1fa8931",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
   {
-    id: 5,
+    id: "5f4cd14f75ec6",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
   {
-    id: 6,
-    imgName:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
-  },
-  {
-    id: 7,
-    imgName:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
-  },
-  {
-    id: 8,
-    imgName:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
-  },
-  {
-    id: 9,
-    imgName:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
-  },
-  {
-    id: 10,
+    id: "5dfade14e1c05",
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
 ];
 
 export const Home = () => {
+  const navigation: object | any = useNavigation();
+
   const renderHeader = () => {
     return (
       <View style={{ flex: 1 }}>
@@ -131,7 +114,15 @@ export const Home = () => {
 
   const reviewCard = (item: any) => {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={{ padding: 8 }}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={{ padding: 7 }}
+        onPress={() =>
+          navigation?.navigate("Form", {
+            questionId: item?.id,
+          })
+        }
+      >
         <Image
           source={{ uri: item?.item?.imgName }}
           style={{
@@ -163,7 +154,13 @@ export const Home = () => {
         </Text>
       </View>
       <View style={styles.bottomContainer}>
-        <View style={{ marginHorizontal: 30 }}>
+        <View
+          style={{
+            paddingHorizontal: 30,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <FlatList
             keyExtractor={(item, index) => `card` + index.toString()}
             data={surveyData}

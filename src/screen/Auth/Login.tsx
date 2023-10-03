@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Button, Label } from "../../components/index";
 import { CustomTextInput } from "../../components/index";
@@ -66,154 +68,157 @@ const Login = () => {
 
   return (
     <KeyboardAvoidingView style={styles.mainBackground} behavior="padding">
-      <SafeAreaView style={styles.mainBackground}>
-        {/* Image container */}
-        <TouchableOpacity activeOpacity={0.6} style={styles.imageContainer}>
-          <Image
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
-            }}
-            style={styles.imageFlag}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
-
-        {/* Login card container */}
-        <View style={styles.container}>
-          <Label
-            title="Login"
-            containerStyle={styles.headerContainer}
-            titleStyle={styles.headerText}
-          />
-          <View style={styles.fieldContainer}>
-            <Formik
-              initialValues={{
-                email: "",
-                password: "",
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <SafeAreaView style={styles.mainBackground}>
+          {/* Image container */}
+          <TouchableOpacity activeOpacity={0.6} style={styles.imageContainer}>
+            <Image
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
               }}
-              validateOnMount={true}
-              validationSchema={formValidation}
-              onSubmit={(values: any) =>
-                onLoginPress(values.email, values.password)
-              }
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                touched,
-                isValid,
-                errors,
-              }) => (
-                <View>
-                  {/* Email Input */}
-                  <CustomTextInput
-                    name="email"
-                    value={values.email}
-                    placeHolder={"Email"}
-                    onBlur={handleBlur("email")}
-                    onChangeText={handleChange("email")}
-                    onNextFocus={() => passwordRef.current.focus()}
-                    errorText={errors.email}
-                    isTouched={touched.email}
-                  />
+              style={styles.imageFlag}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
 
-                  {/* Password Input */}
-                  <CustomTextInput
-                    name="password"
-                    ref={passwordRef}
-                    containerStyles={{
-                      alignItems: "center",
-                      flexDirection: "row",
-                      marginBottom: 0,
-                    }}
-                    inputStyles={{ flex: 1 }}
-                    value={values.password}
-                    placeHolder="Password"
-                    onBlur={handleBlur("password")}
-                    onChangeText={handleChange("password")}
-                    onPressImage={() => setVisibleInput(!visibleInput)}
-                    secureTextEntry={visibleInput}
-                    IconName={visibleInput ? "eye" : "eye-off"}
-                    errorText={errors.password}
-                    isTouched={touched.password}
-                  />
+          {/* Login card container */}
 
-                  {/* Forgot Password */}
-                  <TouchableOpacity style={styles.forgotPasswordContainer}>
-                    <Text style={styles.forgotPasswordText}>
-                      Forgot password?
-                    </Text>
-                  </TouchableOpacity>
-
-                  {/* Sign in Button */}
-                  <Button
-                    title="Sign In"
-                    disable={!isValid}
-                    isProgress={visibleLoader}
-                    onPress={() => handleSubmit()}
-                  />
-
-                  {/* Divider */}
-                  <Label title="- OR -" containerStyle={{ marginTop: 10 }} />
-
-                  {/* Social Login Button */}
-                  <Button
-                    title="Sign in via Facebook"
-                    containerStyles={styles.buttonContainer}
-                    titleStyles={styles.buttonText}
-                    iconName={"logo-facebook"}
-                    onPress={() => console.log("Login with facebook action")}
-                  />
-
-                  <Button
-                    title="Sign in via Google"
-                    containerStyles={styles.buttonContainer}
-                    titleStyles={styles.buttonText}
-                    iconName={"logo-google"}
-                    onPress={() => console.log("Login with google action")}
-                  />
-                </View>
-              )}
-            </Formik>
-
-            {/* Sign-up button */}
-            <View
-              style={{
-                marginTop: `${deviceHeight * 0.025}%`,
-              }}
-            >
-              <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
-                Don't have an account yet?
-              </Text>
-              <TouchableOpacity
-                onPress={() => console.log("Sign Up action button")}
+          <View style={styles.container}>
+            <Label
+              title="Login"
+              containerStyle={styles.headerContainer}
+              titleStyle={styles.headerText}
+            />
+            <View style={styles.fieldContainer}>
+              <Formik
+                initialValues={{
+                  email: "",
+                  password: "",
+                }}
+                validateOnMount={true}
+                validationSchema={formValidation}
+                onSubmit={(values: any) =>
+                  onLoginPress(values.email, values.password)
+                }
               >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    { fontWeight: "bold", alignSelf: "center" },
-                  ]}
-                >
-                  {" "}
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
-            </View>
+                {({
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  touched,
+                  isValid,
+                  errors,
+                }) => (
+                  <View>
+                    {/* Email Input */}
+                    <CustomTextInput
+                      name="email"
+                      value={values.email}
+                      placeHolder={"Email"}
+                      onBlur={handleBlur("email")}
+                      onChangeText={handleChange("email")}
+                      onNextFocus={() => passwordRef.current.focus()}
+                      errorText={errors.email}
+                      isTouched={touched.email}
+                    />
 
-            <View
-              style={{
-                marginTop: `${deviceHeight * 0.025}%`,
-              }}
-            >
-              <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
-                @2023 Try & Review, All Rights Reserved.
-              </Text>
+                    {/* Password Input */}
+                    <CustomTextInput
+                      name="password"
+                      ref={passwordRef}
+                      containerStyles={{
+                        alignItems: "center",
+                        flexDirection: "row",
+                        marginBottom: 0,
+                      }}
+                      inputStyles={{ flex: 1 }}
+                      value={values.password}
+                      placeHolder="Password"
+                      onBlur={handleBlur("password")}
+                      onChangeText={handleChange("password")}
+                      onPressImage={() => setVisibleInput(!visibleInput)}
+                      secureTextEntry={visibleInput}
+                      IconName={visibleInput ? "eye" : "eye-off"}
+                      errorText={errors.password}
+                      isTouched={touched.password}
+                    />
+
+                    {/* Forgot Password */}
+                    <TouchableOpacity style={styles.forgotPasswordContainer}>
+                      <Text style={styles.forgotPasswordText}>
+                        Forgot password?
+                      </Text>
+                    </TouchableOpacity>
+
+                    {/* Sign in Button */}
+                    <Button
+                      title="Sign In"
+                      disable={!isValid}
+                      isProgress={visibleLoader}
+                      onPress={() => handleSubmit()}
+                    />
+
+                    {/* Divider */}
+                    <Label title="- OR -" containerStyle={{ marginTop: 10 }} />
+
+                    {/* Social Login Button */}
+                    <Button
+                      title="Sign in via Facebook"
+                      containerStyles={styles.buttonContainer}
+                      titleStyles={styles.buttonText}
+                      iconName={"logo-facebook"}
+                      onPress={() => console.log("Login with facebook action")}
+                    />
+
+                    <Button
+                      title="Sign in via Google"
+                      containerStyles={styles.buttonContainer}
+                      titleStyles={styles.buttonText}
+                      iconName={"logo-google"}
+                      onPress={() => console.log("Login with google action")}
+                    />
+                  </View>
+                )}
+              </Formik>
+
+              {/* Sign-up button */}
+              <View
+                style={{
+                  marginTop: `${deviceHeight * 0.025}%`,
+                }}
+              >
+                <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
+                  Don't have an account yet?
+                </Text>
+                <TouchableOpacity
+                  onPress={() => console.log("Sign Up action button")}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      { fontWeight: "bold", alignSelf: "center" },
+                    ]}
+                  >
+                    {" "}
+                    Sign Up
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  marginTop: `${deviceHeight * 0.025}%`,
+                }}
+              >
+                <Text style={[styles.headerText, { fontSize: 13, padding: 0 }]}>
+                  @2023 Try & Review, All Rights Reserved.
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
