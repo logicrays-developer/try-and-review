@@ -135,7 +135,7 @@ export const Home = () => {
         style={{ padding: 7 }}
         onPress={() =>
           navigation?.navigate("Form", {
-            questionId: item?.id,
+            questionId: item?.item?.id,
           })
         }
       >

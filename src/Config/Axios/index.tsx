@@ -22,6 +22,7 @@ const language = {
  */
 
 export const makeAuthenticatedGetRequest = (url: string): any => {
+  console.log("url -----", url);
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
     console.log("Access-Token GET Request---->", url);
@@ -42,6 +43,7 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
           return resolve(returnValue);
         })
         .catch(async function (error) {
+          console.log("error ----", error);
           if (error.response) {
             const status: any = error.response.status;
             const dataError: any = error.response.data;
@@ -130,15 +132,11 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
                 });
                 return reject(error);
               case 401:
-                // await dispatch(updateAccessToken(state?.user?.refreshToken));
-                // const response = dispatch(
-                //   makeAuthenticatedPostRequest(url, data)
-                // );
-                showMessage({
-                  message: dataError?.message,
-                  type: "danger",
-                });
-                return reject(error);
+                await dispatch(updateAccessToken(state?.user?.refreshToken));
+                const response = dispatch(
+                  makeAuthenticatedPostRequest(url, data)
+                );
+                return resolve(response);
               case 403:
                 showMessage({
                   message: language.serverForbiddenError,

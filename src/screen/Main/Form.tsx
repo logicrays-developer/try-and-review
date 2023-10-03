@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Image,
@@ -26,451 +27,51 @@ import {
   RESULTS,
   request,
 } from "react-native-permissions";
+import {
+  makeAuthenticatedGetRequest,
+  makeAuthenticatedPostRequest,
+} from "../../Config/Axios";
+import { useDispatch } from "react-redux";
 
 const { height, width } = Dimensions.get("screen");
 
-export const Form = () => {
+export const Form = ({ route }: any) => {
   const navigation = useNavigation();
+  const { questionId } = route.params;
   const [ref, setRef] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState<null | Number>(
     null
   );
-  const [questionArr, setQuestionArr] = useState([
-    {
-      id: 355,
-      required: false,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "<p>What's your favourite brand of nuts?</p>",
-        answer_type: "text",
-        required: false,
-        answers: [],
-        profiling_information_type: "Education",
-      },
-    },
-    {
-      id: 11758,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "Test Question numerique",
-        answer_type: "numeric",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 337,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "If yes, please specify your blog URL :",
-        answer_type: "textarea",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 327,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "Please select your interest categories",
-        answer_type: "checkbox",
-        required: true,
-        answers: [
-          {
-            id: 1194,
-            answer: "Beauty & health",
-            visible: true,
-          },
-          {
-            id: 1195,
-            answer: "Food",
-            visible: true,
-          },
-          {
-            id: 1196,
-            answer: "Baby & Kids",
-            visible: true,
-          },
-          {
-            id: 1197,
-            answer: "Home",
-            visible: true,
-          },
-          {
-            id: 1198,
-            answer: "Pets",
-            visible: true,
-          },
-        ],
-        profiling_information_type: "Category interest",
-      },
-    },
-    {
-      id: 5135,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "What's your youngest child date of birth?",
-        answer_type: "date",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 323,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "Do you shop online ?",
-        answer_type: "radio",
-        required: true,
-        answers: [
-          {
-            id: 1157,
-            answer: "Yes",
-            visible: true,
-          },
-          {
-            id: 1158,
-            answer: "No",
-            visible: true,
-          },
-        ],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 324,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "How many people live in your household?",
-        answer_type: "select",
-        required: true,
-        answers: [
-          {
-            id: 1159,
-            answer: "1",
-            visible: true,
-          },
-          {
-            id: 1160,
-            answer: "2",
-            visible: true,
-          },
-          {
-            id: 1161,
-            answer: "3",
-            visible: true,
-          },
-          {
-            id: 1162,
-            answer: "4",
-            visible: true,
-          },
-          {
-            id: 1163,
-            answer: "5",
-            visible: true,
-          },
-          {
-            id: 1164,
-            answer: "+5",
-            visible: true,
-          },
-        ],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 11097,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title:
-          "<p>Please upload a selfie of yourself, showing your skin condition clearly. We would screen applicants with suitable skin for this trial.</p>",
-        answer_type: "image",
-        required: true,
-        answers: [],
-        profiling_information_type: "",
-      },
-    },
-    {
-      id: 11495,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "<p>If you have a video to upload, please attach it here:</p>",
-        answer_type: "video",
-        required: true,
-        answers: [],
-        profiling_information_type: "MP Video 1",
-      },
-    },
-    {
-      id: 13789,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title:
-          "<p>Could you provide your profile username for your Twitter account?</p>",
-        answer_type: "social username",
-        required: true,
-        answers: [],
-        profiling_information_type: "Twitter name",
-      },
-    },
-    {
-      id: 13791,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title:
-          "<p>Could you provide your profile link URL for your Youtube account?</p>",
-        answer_type: "url",
-        required: true,
-        answers: [],
-        profiling_information_type: "Youtube name",
-      },
-    },
-    {
-      id: 11389,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "What is your second child's rating for the TASTE of the milk?",
-        answer_type: "rating",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 11753,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "test scale 0-5",
-        answer_type: "scale",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 11754,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title: "test scale 0-10",
-        answer_type: "scale-10",
-        required: true,
-        answers: [],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 11116,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title:
-          "Please rank (from highest to lowest) the level of their influence on your purchase decision:",
-        answer_type: "rankingOfCriteria",
-        required: true,
-        answers: [
-          {
-            id: 41843,
-            answer: "Dentists",
-            visible: true,
-          },
-          {
-            id: 41844,
-            answer: "Family and friends",
-            visible: true,
-          },
-          {
-            id: 41845,
-            answer: "Influencers",
-            visible: true,
-          },
-          {
-            id: 41846,
-            answer: "Others",
-            visible: true,
-          },
-        ],
-        profiling_information_type: null,
-      },
-    },
-    {
-      id: 11237,
-      required: true,
-      parent_id: 0,
-      triggers: [],
-      leaf: false,
-      question: {
-        title:
-          "<p>Please select the appropriate boxes. Please leave blank ONLY if the statement does not apply to you. The tested shampoo....</p>",
-        answer_type: "checkboxGrid",
-        required: true,
-        answers: [
-          {
-            id: 42328,
-            answer: "cleanses my hair thoroughly",
-            visible: true,
-          },
-          {
-            id: 42329,
-            answer: "frees my scalp of excess oil",
-            visible: true,
-          },
-          {
-            id: 42330,
-            answer: "leaves a refreshing feeling on my scalp",
-            visible: true,
-          },
-          {
-            id: 42331,
-            answer: "prevents my hair from becoming greasy too quickly",
-            visible: true,
-          },
-          {
-            id: 42332,
-            answer: "prevents my scalp from becoming greasy too quickly",
-            visible: true,
-          },
-          {
-            id: 42333,
-            answer: "is gentle on my scalp",
-            visible: true,
-          },
-          {
-            id: 42334,
-            answer: "reduces itching on my scalp",
-            visible: true,
-          },
-          {
-            id: 42335,
-            answer: "reduces the burning on my scalp",
-            visible: true,
-          },
-          {
-            id: 42336,
-            answer: "reduces my dandruff",
-            visible: true,
-          },
-          {
-            id: 42337,
-            answer: "reduces the smell on my scalp",
-            visible: true,
-          },
-          {
-            id: 42338,
-            answer: "reduces redness",
-            visible: false,
-          },
-        ],
-        profiling_information_type: "",
-        checklist_grid: [
-          {
-            title: "Strongly agree",
-          },
-          {
-            title: "Agree",
-          },
-          {
-            title: "Neither agree nor disagree",
-          },
-          {
-            title: "Disagree",
-          },
-          {
-            title: "Strongly disagree",
-          },
-        ],
-      },
-    },
-  ]);
+  const [questionArr, setQuestionArr] = useState([]);
+  const dispatch = useDispatch();
   const today = new Date();
-  const minDate = new Date();
-  const maxDate = new Date();
-  let qIndex = 0;
 
-  // useEffect(() => {
-  //   let questionsArray: any[] = [];
-  //   const getQuestions = async () => {
-  //     // TODO get questions list here
-  //     const response = await fetch(`/mobile/cms_forms/59`);
-  //     if (response.status === 200) {
-  //       response.data?.data.form_sections.forEach(
-  //         (item: any, sIndex: number) => {
-  //           item.cms_questions.forEach((question: any, index: number) => {
-  //             question.sIndex = sIndex;
-  //             question.cms_section_id = item.id;
-  //             question.qIndex = qIndex;
-  //             question.cms_question_id = question.id;
-  //             question.uploadImage = [];
-  //             if (question.cms_questiion_type === "File upload") {
-  //               question.documents = [];
-  //             }
-  //             questionsArray.push(question);
-  //             qIndex = qIndex + 1;
-  //           });
-  //         }
-  //       );
-  //       setQuestions(questionsArray);
-  //       setLoading(false);
-  //     } else {
-  //       if (!response.data.data) {
-  //         Alert.alert("Error", response.data?.message, [
-  //           { text: "Ok", onPress: () => navigation.goBack() },
-  //         ]);
-  //       } else {
-  //         setLoading(false);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const getQuestions = async () => {
+      try {
+        const response = await dispatch(
+          makeAuthenticatedGetRequest(`/api/app/survey/${questionId}`)
+        );
+        if (response.status === 200) {
+          setQuestionArr(response.data);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.log("Error here----", error);
+        throw error;
+      }
+      /**
+       * if nested question array is there,
+       * then need to manage here by flatten with parent_question_id and child_question_id
+       */
+    };
 
-  //   getQuestions();
-  // }, []);
+    getQuestions();
+  }, []);
 
   const requestCameraPermission = async () => {
     const granted = await request(
@@ -506,8 +107,12 @@ export const Form = () => {
     );
     console.log("Permission here----", granted);
     if (
-      granted["android.permission.READ_MEDIA_IMAGES"] === RESULTS.GRANTED &&
-      granted["android.permission.READ_MEDIA_VIDEO"] === RESULTS.GRANTED
+      (Platform.OS === "android" &&
+        granted["android.permission.READ_MEDIA_IMAGES"] === RESULTS.GRANTED &&
+        granted["android.permission.READ_MEDIA_VIDEO"] === RESULTS.GRANTED) ||
+      (Platform.OS === "ios" &&
+        granted["ios.permission.MEDIA_LIBRARY"] === RESULTS.GRANTED &&
+        granted["ios.permission.PHOTO_LIBRARY"] === RESULTS.GRANTED)
     ) {
       return true;
     } else {
@@ -1166,14 +771,28 @@ export const Form = () => {
               <Text style={{ fontSize: 14 }}>Step 1</Text>
             </View>
           </View>
-          <ScrollView style={styles.contentContainer}>
-            {questionArr.map((question, qIndex) =>
-              _renderQuestion(question, qIndex)
-            )}
-            <TouchableOpacity style={styles.nextButton}>
-              <Text>Next</Text>
-            </TouchableOpacity>
-          </ScrollView>
+          {loading ? (
+            <View style={styles.headerContainer}>
+              <ActivityIndicator size={"small"} color={"#F97A02"} />
+            </View>
+          ) : (
+            <>
+              {questionArr.length ? (
+                <ScrollView style={styles.contentContainer}>
+                  {questionArr.map((question, qIndex) =>
+                    _renderQuestion(question, qIndex)
+                  )}
+                  <TouchableOpacity style={styles.nextButton}>
+                    <Text>Next</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              ) : (
+                <View style={styles.headerContainer}>
+                  <Text style={styles.questionText}>No Data Found.</Text>
+                </View>
+              )}
+            </>
+          )}
         </View>
       </SafeAreaView>
     </View>
