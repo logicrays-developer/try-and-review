@@ -18,9 +18,10 @@ const initialState: IUserSlice = {
 export const updateAccessToken = createAsyncThunk(
   "updateToken",
   async (tokens: any) => {
-    const response = await axiosInstance.post("/token/refresh/", {
+    const response = await axiosInstance.post("/api/app/token/refresh", {
       refresh: tokens,
     });
+    console.log("Response for Update refresh token -----", response);
     return response?.data?.access;
   }
 );

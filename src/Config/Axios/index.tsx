@@ -24,7 +24,6 @@ const language = {
 export const makeAuthenticatedGetRequest = (url: string): any => {
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
-    console.log("state", state);
     console.log("Access-Token GET Request---->", url);
     return new Promise((resolve, reject) => {
       axiosInstance
@@ -48,13 +47,9 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
             const dataError: any = error.response.data;
             switch (status) {
               case 401:
-                // await dispatch(updateAccessToken(state?.user?.refreshToken));
-                // const response = dispatch(makeAuthenticatedGetRequest(url));
-                showMessage({
-                  message: dataError?.message[0],
-                  type: "danger",
-                });
-                return reject(error);
+                await dispatch(updateAccessToken(state?.user?.refreshToken));
+                const response = dispatch(makeAuthenticatedGetRequest(url));
+                return resolve(response);
               case 403:
                 showMessage({
                   message: language.serverForbiddenError,

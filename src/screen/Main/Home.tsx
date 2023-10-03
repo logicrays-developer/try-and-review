@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -12,6 +12,8 @@ import { COLORS } from "../../styles";
 import { IMAGES } from "../../utils/ImageSource";
 import { deviceWidth } from "../../utils/Dimension";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 
 const surveyData = [
   {
@@ -48,6 +50,20 @@ const surveyData = [
 
 export const Home = () => {
   const navigation: object | any = useNavigation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getAPI = async () => {
+      try {
+        const { data } = await dispatch(
+          makeAuthenticatedGetRequest("/api/app/survey/650db838123a4")
+        );
+
+        console.log("Data ----", data);
+      } catch (error) {}
+    };
+    getAPI();
+  });
 
   const renderHeader = () => {
     return (
