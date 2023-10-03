@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   Alert,
+  Dimensions,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,23 +18,420 @@ import { Dropdown } from "react-native-element-dropdown";
 import DatePicker from "react-native-date-picker";
 import MaterialComminityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import ImagePicker from "react-native-image-crop-picker";
+import Modal from "react-native-modal";
+import {
+  requestMultiple,
+  PERMISSIONS,
+  RESULTS,
+  request,
+} from "react-native-permissions";
+
+const { height, width } = Dimensions.get("screen");
 
 export const Form = () => {
   const navigation = useNavigation();
   const [ref, setRef] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [questions, setQuestions] = useState<Array<any>>([]);
-  const [dateOpen, setDateOpen] = useState(false);
-  const [confirmation, setConfirmation] = useState<boolean>(false);
-  const [inputText, setInputText] = useState<string>("");
-  const [dateModalIndex, setDateModalIndex] = useState<null | Number>(null);
-  const [activeTextInputIndex, setActiveTextInputIndex] =
-    useState<null | Number>(null);
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState<null | Number>(
+    null
+  );
+  const [questionArr, setQuestionArr] = useState([
+    {
+      id: 355,
+      required: false,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "<p>What's your favourite brand of nuts?</p>",
+        answer_type: "text",
+        required: false,
+        answers: [],
+        profiling_information_type: "Education",
+      },
+    },
+    {
+      id: 11758,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "Test Question numerique",
+        answer_type: "numeric",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 337,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "If yes, please specify your blog URL :",
+        answer_type: "textarea",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 327,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "Please select your interest categories",
+        answer_type: "checkbox",
+        required: true,
+        answers: [
+          {
+            id: 1194,
+            answer: "Beauty & health",
+            visible: true,
+          },
+          {
+            id: 1195,
+            answer: "Food",
+            visible: true,
+          },
+          {
+            id: 1196,
+            answer: "Baby & Kids",
+            visible: true,
+          },
+          {
+            id: 1197,
+            answer: "Home",
+            visible: true,
+          },
+          {
+            id: 1198,
+            answer: "Pets",
+            visible: true,
+          },
+        ],
+        profiling_information_type: "Category interest",
+      },
+    },
+    {
+      id: 5135,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "What's your youngest child date of birth?",
+        answer_type: "date",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 323,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "Do you shop online ?",
+        answer_type: "radio",
+        required: true,
+        answers: [
+          {
+            id: 1157,
+            answer: "Yes",
+            visible: true,
+          },
+          {
+            id: 1158,
+            answer: "No",
+            visible: true,
+          },
+        ],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 324,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "How many people live in your household?",
+        answer_type: "select",
+        required: true,
+        answers: [
+          {
+            id: 1159,
+            answer: "1",
+            visible: true,
+          },
+          {
+            id: 1160,
+            answer: "2",
+            visible: true,
+          },
+          {
+            id: 1161,
+            answer: "3",
+            visible: true,
+          },
+          {
+            id: 1162,
+            answer: "4",
+            visible: true,
+          },
+          {
+            id: 1163,
+            answer: "5",
+            visible: true,
+          },
+          {
+            id: 1164,
+            answer: "+5",
+            visible: true,
+          },
+        ],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 11097,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title:
+          "<p>Please upload a selfie of yourself, showing your skin condition clearly. We would screen applicants with suitable skin for this trial.</p>",
+        answer_type: "image",
+        required: true,
+        answers: [],
+        profiling_information_type: "",
+      },
+    },
+    {
+      id: 11495,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "<p>If you have a video to upload, please attach it here:</p>",
+        answer_type: "video",
+        required: true,
+        answers: [],
+        profiling_information_type: "MP Video 1",
+      },
+    },
+    {
+      id: 13789,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title:
+          "<p>Could you provide your profile username for your Twitter account?</p>",
+        answer_type: "social username",
+        required: true,
+        answers: [],
+        profiling_information_type: "Twitter name",
+      },
+    },
+    {
+      id: 13791,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title:
+          "<p>Could you provide your profile link URL for your Youtube account?</p>",
+        answer_type: "url",
+        required: true,
+        answers: [],
+        profiling_information_type: "Youtube name",
+      },
+    },
+    {
+      id: 11389,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "What is your second child's rating for the TASTE of the milk?",
+        answer_type: "rating",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 11753,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "test scale 0-5",
+        answer_type: "scale",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 11754,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title: "test scale 0-10",
+        answer_type: "scale-10",
+        required: true,
+        answers: [],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 11116,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title:
+          "Please rank (from highest to lowest) the level of their influence on your purchase decision:",
+        answer_type: "rankingOfCriteria",
+        required: true,
+        answers: [
+          {
+            id: 41843,
+            answer: "Dentists",
+            visible: true,
+          },
+          {
+            id: 41844,
+            answer: "Family and friends",
+            visible: true,
+          },
+          {
+            id: 41845,
+            answer: "Influencers",
+            visible: true,
+          },
+          {
+            id: 41846,
+            answer: "Others",
+            visible: true,
+          },
+        ],
+        profiling_information_type: null,
+      },
+    },
+    {
+      id: 11237,
+      required: true,
+      parent_id: 0,
+      triggers: [],
+      leaf: false,
+      question: {
+        title:
+          "<p>Please select the appropriate boxes. Please leave blank ONLY if the statement does not apply to you. The tested shampoo....</p>",
+        answer_type: "checkboxGrid",
+        required: true,
+        answers: [
+          {
+            id: 42328,
+            answer: "cleanses my hair thoroughly",
+            visible: true,
+          },
+          {
+            id: 42329,
+            answer: "frees my scalp of excess oil",
+            visible: true,
+          },
+          {
+            id: 42330,
+            answer: "leaves a refreshing feeling on my scalp",
+            visible: true,
+          },
+          {
+            id: 42331,
+            answer: "prevents my hair from becoming greasy too quickly",
+            visible: true,
+          },
+          {
+            id: 42332,
+            answer: "prevents my scalp from becoming greasy too quickly",
+            visible: true,
+          },
+          {
+            id: 42333,
+            answer: "is gentle on my scalp",
+            visible: true,
+          },
+          {
+            id: 42334,
+            answer: "reduces itching on my scalp",
+            visible: true,
+          },
+          {
+            id: 42335,
+            answer: "reduces the burning on my scalp",
+            visible: true,
+          },
+          {
+            id: 42336,
+            answer: "reduces my dandruff",
+            visible: true,
+          },
+          {
+            id: 42337,
+            answer: "reduces the smell on my scalp",
+            visible: true,
+          },
+          {
+            id: 42338,
+            answer: "reduces redness",
+            visible: false,
+          },
+        ],
+        profiling_information_type: "",
+        checklist_grid: [
+          {
+            title: "Strongly agree",
+          },
+          {
+            title: "Agree",
+          },
+          {
+            title: "Neither agree nor disagree",
+          },
+          {
+            title: "Disagree",
+          },
+          {
+            title: "Strongly disagree",
+          },
+        ],
+      },
+    },
+  ]);
   const today = new Date();
   const minDate = new Date();
   const maxDate = new Date();
-  minDate.setFullYear(today.getFullYear() - 2);
-  maxDate.setFullYear(today.getFullYear() + 2);
   let qIndex = 0;
 
   // useEffect(() => {
@@ -73,279 +472,376 @@ export const Form = () => {
   //   getQuestions();
   // }, []);
 
-  const [questionArr, setQuestionArr] = useState([
-    {
-      type: "Drop-down",
-      id: 1,
-      questionText: "How regularly do you use face masks?",
-      answerOptions: [
-        { value: 1, label: "Regular" },
-        { value: 2, label: "Usually" },
-        { value: 3, label: "Rerely" },
-        { value: 4, label: "Not Used" },
-      ],
-    },
-    {
-      type: "Multiple-choice",
-      id: 2,
-      questionText: "What is the important function of a face mask for you?",
-      answerOptions: [
-        { id: 1, option: "Nourishing" },
-        { id: 2, option: "Moisturizing" },
-        { id: 3, option: "Anti-Fatigue, energizing" },
-        { id: 4, option: "Toning, revitailizing" },
-        { id: 5, option: "Brightening" },
-        { id: 6, option: "Relaxing, refreshing" },
-      ],
-    },
-    {
-      type: "Number",
-      id: 3,
-      questionText: "What is your age?",
-      answerOptions: [],
-    },
-    {
-      type: "Short-answer",
-      id: 4,
-      questionText: "What is your current choise?",
-      answerOptions: [],
-    },
-    {
-      type: "Long-answer",
-      id: 5,
-      questionText: "How you use face mask, describe in detail?",
-      answerOptions: [],
-    },
-    {
-      type: "Boolean",
-      id: 6,
-      questionText: "Are you happy with your current choice?",
-      answerOptions: [
-        { id: 1, option: "Yes" },
-        { id: 2, option: "No" },
-        { id: 3, option: "N/A" },
-      ],
-    },
-    {
-      type: "Date",
-      id: 7,
-      questionText: "from which date, you start using current choice?",
-      answerOptions: [],
-    },
-    {
-      type: "File-upload",
-      id: 8,
-      questionText: "Any file you want to share with us? attach here.",
-      answerOptions: [],
-    },
-    {
-      type: "Text-block",
-      id: 9,
-      questionText: "Please share your experience with current choice.",
-      answerOptions: [],
-    },
-    {
-      type: "Rating",
-      id: 10,
-      questionText: "Please Rate your current choice.",
-      answerOptions: [],
-    },
-    {
-      type: "RankingOfCriteria",
-      id: 11,
-      questionText: "Please Rank your current influancer.",
-      answerOptions: [
-        {
-          id: 41843,
-          answer: "Dentists",
-          visible: true,
-        },
-        {
-          id: 41844,
-          answer: "Family and friends",
-          visible: true,
-        },
-        {
-          id: 41845,
-          answer: "Influencers",
-          visible: true,
-        },
-        {
-          id: 41846,
-          answer: "Others",
-          visible: true,
-        },
-      ],
-    },
-  ]);
+  const requestCameraPermission = async () => {
+    const granted = await request(
+      Platform.OS === "ios"
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA
+    );
+    if (granted === RESULTS.GRANTED) {
+      return true;
+    } else {
+      Alert.alert(
+        "Permission Required",
+        "Please give permission to access Camera from settings.",
+        [
+          {
+            text: "Okay",
+            onPress: () => {},
+          },
+        ]
+      );
+      return false;
+    }
+  };
 
-  const _renderAnswer = (question: any, qIndex: number) => {
-    switch (question.type) {
-      case "Drop-down":
+  const requestStoragePermission = async () => {
+    const granted = await requestMultiple(
+      Platform.OS === "ios"
+        ? [PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.MEDIA_LIBRARY]
+        : [
+            PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
+            PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+          ]
+    );
+    console.log("Permission here----", granted);
+    if (
+      granted["android.permission.READ_MEDIA_IMAGES"] === RESULTS.GRANTED &&
+      granted["android.permission.READ_MEDIA_VIDEO"] === RESULTS.GRANTED
+    ) {
+      return true;
+    } else {
+      Alert.alert(
+        "Permission Required",
+        "Please give permission to access Read-Write Storage from settings.",
+        [
+          {
+            text: "Okay",
+            onPress: () => {},
+          },
+        ]
+      );
+      return false;
+    }
+  };
+
+  const onImagePickerPress = async () => {
+    let checkPermission = await requestStoragePermission();
+    if (checkPermission) {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: false,
+        includeBase64: true,
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
+  const onImageCameraPress = async () => {
+    let checkPermission = await requestCameraPermission();
+    if (checkPermission) {
+      ImagePicker.openCamera({
+        width: 300,
+        height: 400,
+        cropping: false,
+        includeBase64: true,
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
+  const onVideoPickerPress = async () => {
+    let checkPermission = await requestStoragePermission();
+    if (checkPermission) {
+      ImagePicker.openPicker({
+        mediaType: "video",
+      }).then((video) => {
+        console.log(video);
+      });
+    }
+  };
+
+  const onVideoCameraPress = async () => {
+    let checkPermission = await requestCameraPermission();
+    if (checkPermission) {
+      ImagePicker.openCamera({
+        mediaType: "video",
+      }).then((image) => {
+        console.log(image);
+      });
+    }
+  };
+
+  const _renderAnswer = (data: any, qIndex: number) => {
+    switch (data.question.answer_type) {
+      case "select":
         return (
           <View key={qIndex}>
             <Dropdown
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
-              data={question.answerOptions}
+              data={data.question?.answers}
               maxHeight={300}
-              labelField="label"
-              valueField="value"
+              labelField="answer"
+              valueField="id"
               placeholder="Select item"
-              value={question.answer?.option}
+              value={data.question?.ans?.option}
               onChange={(item) => {
-                question.answer = item;
+                data.question.ans = item;
                 setQuestionArr(questionArr);
               }}
             />
           </View>
         );
-      case "Multiple-choice":
+      case "checkbox":
         return (
           <View style={styles.MultipleChoiceContainer}>
-            {question.answerOptions.map((option: any, oIndex: number) => {
+            {data.question.answers.map((option: any, oIndex: number) => {
               return (
                 <View style={styles.MultipleChoiceView} key={oIndex}>
                   <MaterialComminityIcons
                     name={
-                      question.answer?.includes(option.id)
+                      data.question?.ans?.includes(option.id)
                         ? "checkbox-marked"
                         : "checkbox-blank-outline"
                     }
                     size={25}
                     color={COLORS.solidBlack}
                     onPress={() => {
-                      if (question.answer?.includes(option.id)) {
-                        let delItemIndex = question.answer.indexOf(option.id);
-                        question.answer.splice(delItemIndex, 1);
+                      if (data.question.ans?.includes(option.id)) {
+                        let delItemIndex = data.question.ans.indexOf(option.id);
+                        data.question.ans.splice(delItemIndex, 1);
                       } else {
-                        if (!question.answer) {
-                          question.answer = [];
+                        if (!data.question.ans) {
+                          data.question.ans = [];
                         }
-                        question.answer.push(option.id);
+                        data.question.ans.push(option.id);
                       }
                       setQuestionArr(questionArr);
                       setRef(!ref);
                     }}
                   />
-                  <Text style={styles.MultipleChoiceText}>{option.option}</Text>
+                  <Text
+                    style={[styles.MultipleChoiceText, { maxWidth: "80%" }]}
+                  >
+                    {option.answer}
+                  </Text>
                 </View>
               );
             })}
           </View>
         );
-      case "Number":
+      case "checkboxGrid":
+        return (
+          <View style={styles.MultipleChoiceContainer}>
+            {data.question.answers.map((option: any, oIndex: number) => {
+              return (
+                <View style={styles.MultipleChoiceView} key={oIndex}>
+                  <MaterialComminityIcons
+                    name={
+                      data.question?.ans?.includes(option.id)
+                        ? "checkbox-marked"
+                        : "checkbox-blank-outline"
+                    }
+                    size={25}
+                    color={COLORS.solidBlack}
+                    onPress={() => {
+                      if (data.question.ans?.includes(option.id)) {
+                        let delItemIndex = data.question.ans.indexOf(option.id);
+                        data.question.ans.splice(delItemIndex, 1);
+                      } else {
+                        if (!data.question.ans) {
+                          data.question.ans = [];
+                        }
+                        data.question.ans.push(option.id);
+                      }
+                      setQuestionArr(questionArr);
+                      setRef(!ref);
+                    }}
+                  />
+                  <Text
+                    style={[styles.MultipleChoiceText, { maxWidth: "80%" }]}
+                  >
+                    {option.answer}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        );
+      case "numeric":
         return (
           <TextInput
             style={[
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
             ]}
             maxLength={15}
-            value={question.answer}
+            value={data.question.ans}
             placeholder="Enter Number"
             keyboardType="number-pad"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
-              question.answer = val;
+              data.question.ans = val;
               setRef(!ref);
             }}
           />
         );
-      case "Short-answer":
+      case "text":
         return (
           <TextInput
             style={[
               styles.singleLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
             ]}
-            maxLength={30}
-            value={question.answer}
+            maxLength={50}
+            value={data.question.ans}
             placeholder="Enter Value"
             keyboardType="email-address"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
-              question.answer = val;
+              data.question.ans = val;
               setRef(!ref);
             }}
           />
         );
-      case "Long-answer":
+      case "social username":
+        return (
+          <TextInput
+            style={[
+              styles.singleLineInput,
+              {
+                backgroundColor:
+                  activeQuestionIndex === qIndex
+                    ? COLORS.white
+                    : COLORS.liteWhite,
+              },
+            ]}
+            maxLength={50}
+            value={data.question.ans}
+            placeholder="Enter Value"
+            keyboardType="email-address"
+            placeholderTextColor={COLORS.placeText}
+            onFocus={() => {
+              setActiveQuestionIndex(qIndex);
+            }}
+            onBlur={() => {
+              setActiveQuestionIndex(null);
+            }}
+            onChangeText={(val) => {
+              data.question.ans = val;
+              setRef(!ref);
+            }}
+          />
+        );
+      case "url":
+        return (
+          <TextInput
+            style={[
+              styles.singleLineInput,
+              {
+                backgroundColor:
+                  activeQuestionIndex === qIndex
+                    ? COLORS.white
+                    : COLORS.liteWhite,
+              },
+            ]}
+            maxLength={50}
+            value={data.question.ans}
+            placeholder="Enter Value"
+            keyboardType="email-address"
+            placeholderTextColor={COLORS.placeText}
+            onFocus={() => {
+              setActiveQuestionIndex(qIndex);
+            }}
+            onBlur={() => {
+              setActiveQuestionIndex(null);
+            }}
+            onChangeText={(val) => {
+              data.question.ans = val;
+              setRef(!ref);
+            }}
+          />
+        );
+      case "textarea":
         return (
           <TextInput
             style={[
               styles.multiLineInput,
               {
                 backgroundColor:
-                  activeTextInputIndex === qIndex
+                  activeQuestionIndex === qIndex
                     ? COLORS.white
                     : COLORS.liteWhite,
               },
             ]}
             maxLength={1000}
             multiline={true}
-            value={question.answer}
+            value={data.question.ans}
             placeholder="Enter Description"
             keyboardType="default"
             placeholderTextColor={COLORS.placeText}
             onFocus={() => {
-              setActiveTextInputIndex(qIndex);
+              setActiveQuestionIndex(qIndex);
             }}
             onBlur={() => {
-              setActiveTextInputIndex(null);
+              setActiveQuestionIndex(null);
             }}
             onChangeText={(val) => {
-              question.answer = val;
+              data.question.ans = val;
               setRef(!ref);
             }}
           />
         );
-      case "Boolean":
-        return question.answerOptions.map((option: any, oIndex: number) => {
+      case "radio":
+        return data.question.answers?.map((option: any, oIndex: number) => {
           return (
             <View style={styles.booleanOption} key={oIndex}>
               <MaterialComminityIcons
                 name={
-                  question.answer?.id === option.id
+                  data.question.ans?.id === option.id
                     ? "radiobox-marked"
                     : "radiobox-blank"
                 }
                 size={25}
                 color={COLORS.solidBlack}
                 onPress={() => {
-                  question.answer = option;
+                  data.question.ans = option;
                   setQuestionArr(questionArr);
                   setRef(!ref);
                 }}
               />
-              <Text style={styles.MultipleChoiceText}>{option.option}</Text>
+              <Text style={styles.MultipleChoiceText}>{option.answer}</Text>
             </View>
           );
         });
-      case "Date":
+      case "date":
         return (
           <View style={styles.dateContainer}>
             <MaterialComminityIcons
@@ -353,95 +849,193 @@ export const Form = () => {
               size={25}
               color={COLORS.solidBlack}
               onPress={() => {
-                setDateModalIndex(qIndex);
+                setActiveQuestionIndex(qIndex);
               }}
             />
             <View style={styles.dateDetails}>
               <Text style={styles.MultipleChoiceText}>
-                {question.answer
-                  ? question.answer.toLocaleDateString()
+                {data.question.ans
+                  ? data.question.ans.toLocaleDateString()
                   : "Select Date"}
               </Text>
             </View>
             <DatePicker
               modal
-              open={dateModalIndex === qIndex}
-              date={question.answer ? question.answer : today}
+              open={activeQuestionIndex === qIndex}
+              date={data.question.ans ? data.question.ans : today}
               mode="date"
               onConfirm={(date) => {
-                setDateModalIndex(null);
-                question.answer = date;
+                setActiveQuestionIndex(null);
+                data.question.ans = date;
                 setQuestionArr(questionArr);
                 setRef(!ref);
               }}
               onCancel={() => {
-                setDateModalIndex(null);
+                setActiveQuestionIndex(null);
               }}
             />
           </View>
         );
-      case "File-upload":
+      case "image":
         return (
           <View>
-            <TouchableOpacity style={styles.fileUploadContainer}>
+            <TouchableOpacity
+              style={styles.fileUploadContainer}
+              onPress={() => {
+                setActiveQuestionIndex(qIndex);
+              }}
+            >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialComminityIcons
                   name="plus"
                   size={25}
                   color={COLORS.solidBlack}
                 />
-                <Text style={styles.MultipleChoiceText}>Upload</Text>
+                <Text style={styles.MultipleChoiceText}>Image</Text>
               </View>
             </TouchableOpacity>
+            <Modal
+              isVisible={activeQuestionIndex === qIndex}
+              backdropOpacity={0.8}
+              backdropColor={COLORS.darkGrey}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.headerText}>Choose image from</Text>
+                <View style={styles.pickerOptionsContainer}>
+                  <TouchableOpacity
+                    style={[styles.booleanOption]}
+                    onPress={() => {
+                      onImageCameraPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Camera
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.booleanOption}
+                    onPress={() => {
+                      onImagePickerPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Gallery
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={[styles.nextButton, { marginTop: 20 }]}
+                  onPress={() => {
+                    setActiveQuestionIndex(null);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
           </View>
         );
-      case "Text-block":
+      case "video":
         return (
-          <TextInput
-            style={[
-              styles.multiLineInput,
-              {
-                backgroundColor:
-                  activeTextInputIndex === qIndex
-                    ? COLORS.white
-                    : COLORS.liteWhite,
-              },
-            ]}
-            maxLength={1000}
-            multiline={true}
-            value={question.answer}
-            placeholder="Enter Details"
-            keyboardType="default"
-            placeholderTextColor={COLORS.placeText}
-            onFocus={() => {
-              setActiveTextInputIndex(qIndex);
-            }}
-            onBlur={() => {
-              setActiveTextInputIndex(null);
-            }}
-            onChangeText={(val) => {
-              question.answer = val;
-              setRef(!ref);
-            }}
-          />
+          <View>
+            <TouchableOpacity
+              style={styles.fileUploadContainer}
+              onPress={() => {
+                setActiveQuestionIndex(qIndex);
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <MaterialComminityIcons
+                  name="plus"
+                  size={25}
+                  color={COLORS.solidBlack}
+                />
+                <Text style={styles.MultipleChoiceText}>Video</Text>
+              </View>
+            </TouchableOpacity>
+            <Modal
+              isVisible={activeQuestionIndex === qIndex}
+              backdropOpacity={0.8}
+              backdropColor={COLORS.darkGrey}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.headerText}>Choose video from</Text>
+                <View style={styles.pickerOptionsContainer}>
+                  <TouchableOpacity
+                    style={[styles.booleanOption]}
+                    onPress={() => {
+                      onVideoCameraPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Camera
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.booleanOption}
+                    onPress={() => {
+                      onVideoPickerPress();
+                      setActiveQuestionIndex(null);
+                    }}
+                  >
+                    <MaterialComminityIcons
+                      name={"radiobox-blank"}
+                      size={25}
+                      color={COLORS.solidBlack}
+                      onPress={() => {}}
+                    />
+                    <Text style={[styles.questionText, { marginLeft: 5 }]}>
+                      Gallery
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={[styles.nextButton, { marginTop: 20 }]}
+                  onPress={() => {
+                    setActiveQuestionIndex(null);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+          </View>
         );
-      case "Rating":
+      case "rating":
         return (
           <View style={styles.ratingContainer}>
-            {(question.type?.includes("10")
-              ? [...Array(10)]
-              : [...Array(5)]
-            ).map((option: any, oIndex: number) => {
+            {[...Array(5)].map((option: any, oIndex: number) => {
               return (
                 <View key={oIndex}>
                   <MaterialComminityIcons
                     name={
-                      question.answer >= oIndex + 1 ? "star" : "star-outline"
+                      data.question.ans >= oIndex + 1 ? "star" : "star-outline"
                     }
                     size={25}
                     color={COLORS.solidBlack}
                     onPress={() => {
-                      question.answer = oIndex + 1;
+                      data.question.ans = oIndex + 1;
                       setQuestionArr(questionArr);
                       setRef(!ref);
                     }}
@@ -451,33 +1045,79 @@ export const Form = () => {
             })}
           </View>
         );
-      case "RankingOfCriteria":
-        return question.answerOptions.map((option: any, oIndex: number) => {
+      case "scale":
+        return (
+          <View style={styles.ratingContainer}>
+            {[...Array(5)].map((option: any, oIndex: number) => {
+              return (
+                <View key={oIndex}>
+                  <MaterialComminityIcons
+                    name={
+                      data.question.ans >= oIndex + 1 ? "star" : "star-outline"
+                    }
+                    size={25}
+                    color={COLORS.solidBlack}
+                    onPress={() => {
+                      data.question.ans = oIndex + 1;
+                      setQuestionArr(questionArr);
+                      setRef(!ref);
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </View>
+        );
+      case "scale-10":
+        return (
+          <View style={styles.ratingContainer}>
+            {[...Array(10)].map((option: any, oIndex: number) => {
+              return (
+                <View key={oIndex}>
+                  <MaterialComminityIcons
+                    name={
+                      data.question.ans >= oIndex + 1 ? "star" : "star-outline"
+                    }
+                    size={25}
+                    color={COLORS.solidBlack}
+                    onPress={() => {
+                      data.question.ans = oIndex + 1;
+                      setQuestionArr(questionArr);
+                      setRef(!ref);
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </View>
+        );
+      case "rankingOfCriteria":
+        return data.question.answers.map((option: any, oIndex: number) => {
           return (
             <View style={styles.booleanOption} key={oIndex}>
               <Text style={styles.rankingOptionText}>{option.answer}</Text>
               <View style={styles.rankingCriteriaContainer}>
-                {question.answerOptions.map((opt: any, sIndex: number) => {
+                {data.question.answers.map((opt: any, sIndex: number) => {
                   return (
                     <TouchableOpacity
                       style={[
                         styles.rankingOptionContainer,
                         {
                           backgroundColor:
-                            question.answer &&
-                            question.answer[oIndex]?.answerIndex === sIndex
+                            data.question.ans &&
+                            data.question.ans[oIndex]?.answerIndex === sIndex
                               ? "#CDE9E1"
                               : COLORS.liteWhite,
                         },
                       ]}
                       key={sIndex}
                       onPress={() => {
-                        if (!question.answer) {
-                          question.answer = [
-                            ...Array(question.answerOptions.length),
+                        if (!data.question.ans) {
+                          data.question.ans = [
+                            ...Array(data.question.answers.length),
                           ];
                         }
-                        question.answer[oIndex] = {
+                        data.question.ans[oIndex] = {
                           optionIndex: oIndex,
                           answerIndex: sIndex,
                         };
@@ -501,7 +1141,7 @@ export const Form = () => {
   const _renderQuestion = (question: any, qIndex: number) => {
     return (
       <View style={{ marginVertical: 10 }} key={qIndex}>
-        <Text style={styles.questionText}>{question.questionText}</Text>
+        <Text style={styles.questionText}>{question.question.title}</Text>
         <View style={{ marginTop: 10 }}>{_renderAnswer(question, qIndex)}</View>
       </View>
     );
@@ -603,12 +1243,11 @@ const styles = StyleSheet.create({
   MultipleChoiceView: {
     flexDirection: "row",
     marginVertical: 3,
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "50%",
   },
   MultipleChoiceText: {
     paddingLeft: 3,
-    includeFontPadding: false,
     flexWrap: "wrap",
     fontSize: 13,
     color: COLORS.solidBlack,
@@ -695,5 +1334,24 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#F97A02",
     borderRadius: 8,
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  modalContainer: {
+    width: width * 0.8,
+    alignSelf: "center",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.white,
+  },
+  pickerOptionsContainer: {
+    marginTop: 20,
+    height: 70,
+    justifyContent: "space-between",
   },
 });
