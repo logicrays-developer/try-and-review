@@ -33,7 +33,7 @@ import {
 } from "../../Config/Axios";
 import { useDispatch } from "react-redux";
 
-const { height, width } = Dimensions.get("screen");
+const { width } = Dimensions.get("screen");
 
 export const Form = ({ route }: any) => {
   const navigation = useNavigation();
@@ -61,7 +61,6 @@ export const Form = ({ route }: any) => {
         }
       } catch (error) {
         setLoading(false);
-        console.log("Error here----", error);
         throw error;
       }
       /**
@@ -69,9 +68,31 @@ export const Form = ({ route }: any) => {
        * then need to manage here by flatten with parent_question_id and child_question_id
        */
     };
-
     getQuestions();
   }, []);
+
+  const formSubmit = async () => {
+    let params: any = {};
+    questionArr.map((question) => {
+      if (question.question?.ans) {
+        if (question.question?.answer_type !== "rankingOfCriteria") {
+          params[`question_${question.id}`] =
+            question.question?.ans?.toString();
+        } else {
+          let answerString = "";
+          question.question?.ans.map((opt) => {
+            answerString =
+              answerString +
+              `${question.question.answers[opt.optionIndex].answer}-${
+                opt.answerIndex + 1
+              }, `;
+          });
+          params[`question_${question.id}`] = answerString;
+        }
+      }
+    });
+    console.log("Ans here---", params);
+  };
 
   const requestCameraPermission = async () => {
     const granted = await request(
@@ -194,9 +215,9 @@ export const Form = ({ route }: any) => {
               labelField="answer"
               valueField="id"
               placeholder="Select item"
-              value={data.question?.ans?.option}
+              value={data.question?.ans}
               onChange={(item) => {
-                data.question.ans = item;
+                data.question.ans = item.answer;
                 setQuestionArr(questionArr);
               }}
             />
@@ -210,21 +231,23 @@ export const Form = ({ route }: any) => {
                 <View style={styles.MultipleChoiceView} key={oIndex}>
                   <MaterialComminityIcons
                     name={
-                      data.question?.ans?.includes(option.id)
+                      data.question?.ans?.includes(option.answer)
                         ? "checkbox-marked"
                         : "checkbox-blank-outline"
                     }
                     size={25}
                     color={COLORS.solidBlack}
                     onPress={() => {
-                      if (data.question.ans?.includes(option.id)) {
-                        let delItemIndex = data.question.ans.indexOf(option.id);
+                      if (data.question.ans?.includes(option.answer)) {
+                        let delItemIndex = data.question.ans.indexOf(
+                          option.answer
+                        );
                         data.question.ans.splice(delItemIndex, 1);
                       } else {
                         if (!data.question.ans) {
                           data.question.ans = [];
                         }
-                        data.question.ans.push(option.id);
+                        data.question.ans.push(option.answer);
                       }
                       setQuestionArr(questionArr);
                       setRef(!ref);
@@ -248,21 +271,23 @@ export const Form = ({ route }: any) => {
                 <View style={styles.MultipleChoiceView} key={oIndex}>
                   <MaterialComminityIcons
                     name={
-                      data.question?.ans?.includes(option.id)
+                      data.question?.ans?.includes(option.answer)
                         ? "checkbox-marked"
                         : "checkbox-blank-outline"
                     }
                     size={25}
                     color={COLORS.solidBlack}
                     onPress={() => {
-                      if (data.question.ans?.includes(option.id)) {
-                        let delItemIndex = data.question.ans.indexOf(option.id);
+                      if (data.question.ans?.includes(option.answer)) {
+                        let delItemIndex = data.question.ans.indexOf(
+                          option.answer
+                        );
                         data.question.ans.splice(delItemIndex, 1);
                       } else {
                         if (!data.question.ans) {
                           data.question.ans = [];
                         }
-                        data.question.ans.push(option.id);
+                        data.question.ans.push(option.answer);
                       }
                       setQuestionArr(questionArr);
                       setRef(!ref);
@@ -430,14 +455,14 @@ export const Form = ({ route }: any) => {
             <View style={styles.booleanOption} key={oIndex}>
               <MaterialComminityIcons
                 name={
-                  data.question.ans?.id === option.id
+                  data.question.ans === option.answer
                     ? "radiobox-marked"
                     : "radiobox-blank"
                 }
                 size={25}
                 color={COLORS.solidBlack}
                 onPress={() => {
-                  data.question.ans = option;
+                  data.question.ans = option.answer;
                   setQuestionArr(questionArr);
                   setRef(!ref);
                 }}
@@ -772,7 +797,12 @@ export const Form = ({ route }: any) => {
             </View>
           </View>
           {loading ? (
-            <View style={styles.headerContainer}>
+            <View
+              style={[
+                styles.headerContainer,
+                { backgroundColor: COLORS.white },
+              ]}
+            >
               <ActivityIndicator size={"small"} color={"#F97A02"} />
             </View>
           ) : (
@@ -782,7 +812,12 @@ export const Form = ({ route }: any) => {
                   {questionArr.map((question, qIndex) =>
                     _renderQuestion(question, qIndex)
                   )}
-                  <TouchableOpacity style={styles.nextButton}>
+                  <TouchableOpacity
+                    style={styles.nextButton}
+                    onPress={() => {
+                      formSubmit();
+                    }}
+                  >
                     <Text>Next</Text>
                   </TouchableOpacity>
                 </ScrollView>
