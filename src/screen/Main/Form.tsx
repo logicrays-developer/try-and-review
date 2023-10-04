@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../styles";
-import { Dropdown } from "react-native-element-dropdown";
+import SelectDropdown from "react-native-select-dropdown";
 import DatePicker from "react-native-date-picker";
 import MaterialComminityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -185,7 +185,6 @@ export const Form = ({ route }: any) => {
   };
 
   const onImagePickerPress = async (qIndex: number) => {
-    console.log("Question here----", questionArr[qIndex].question);
     let checkPermission = await requestStoragePermission();
     if (checkPermission) {
       ImagePicker.openPicker({
@@ -194,13 +193,16 @@ export const Form = ({ route }: any) => {
         cropping: false,
         includeBase64: true,
       }).then((image) => {
-        console.log(image);
+        questionArr[
+          qIndex
+        ].question.ans = `data:${image.mime};base64,${image.data}`;
+        setQuestionArr(questionArr);
+        setRef(!ref);
       });
     }
   };
 
   const onImageCameraPress = async (qIndex: number) => {
-    console.log("Question here----", questionArr[qIndex].question);
     let checkPermission = await requestCameraPermission();
     if (checkPermission) {
       ImagePicker.openCamera({
@@ -209,29 +211,33 @@ export const Form = ({ route }: any) => {
         cropping: false,
         includeBase64: true,
       }).then((image) => {
-        console.log(image);
+        questionArr[
+          qIndex
+        ].question.ans = `data:${image.mime};base64,${image.data}`;
+        setQuestionArr(questionArr);
+        setRef(!ref);
       });
     }
   };
 
-  const onVideoPickerPress = async () => {
+  const onVideoPickerPress = async (qIndex: number) => {
     let checkPermission = await requestStoragePermission();
     if (checkPermission) {
       ImagePicker.openPicker({
         mediaType: "video",
       }).then((video) => {
-        console.log(video);
+        console.log("Video result----", video);
       });
     }
   };
 
-  const onVideoCameraPress = async () => {
+  const onVideoCameraPress = async (qIndex: number) => {
     let checkPermission = await requestCameraPermission();
     if (checkPermission) {
       ImagePicker.openCamera({
         mediaType: "video",
-      }).then((image) => {
-        console.log(image);
+      }).then((video) => {
+        console.log("Video result----", video);
       });
     }
   };
@@ -241,7 +247,7 @@ export const Form = ({ route }: any) => {
       case "select":
         return (
           <View key={qIndex}>
-            <Dropdown
+            {/* <Dropdown
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -251,11 +257,50 @@ export const Form = ({ route }: any) => {
               valueField="id"
               placeholder="Select item"
               value={data.question?.ans}
+              key={qIndex}
               onChange={(item) => {
                 data.question.ans = item.answer;
                 setQuestionArr(questionArr);
-                setRef(!ref);
               }}
+            /> */}
+            <SelectDropdown
+              data={data.question?.answers}
+              onSelect={(selectedItem, index) => {
+                data.question.ans = selectedItem.answer;
+                setQuestionArr(questionArr);
+              }}
+              rowTextForSelection={(item, index) => {
+                return item.answer;
+              }}
+              buttonTextAfterSelection={() => {
+                return data.question.ans;
+              }}
+              dropdownStyle={{ borderRadius: 8 }}
+              buttonStyle={styles.dropDownBox}
+              renderCustomizedRowChild={(item) => (
+                <Text style={{ paddingLeft: 20, fontSize: 16 }}>
+                  {item.answer}
+                </Text>
+              )}
+              renderDropdownIcon={() => (
+                <MaterialComminityIcons
+                  name="chevron-down"
+                  size={20}
+                  color={COLORS.solidBlack}
+                />
+              )}
+              renderCustomizedButtonChild={() => (
+                <Text
+                  style={{
+                    color: data.question.ans
+                      ? COLORS.solidBlack
+                      : COLORS.placeText,
+                    marginLeft: 3,
+                  }}
+                >
+                  {data.question.ans ? data.question.ans : "Select item"}
+                </Text>
+              )}
             />
           </View>
         );
@@ -644,7 +689,7 @@ export const Form = ({ route }: any) => {
                   <TouchableOpacity
                     style={[styles.booleanOption]}
                     onPress={() => {
-                      onVideoCameraPress();
+                      onVideoCameraPress(qIndex);
                       setActiveQuestionIndex(null);
                     }}
                   >
@@ -661,7 +706,7 @@ export const Form = ({ route }: any) => {
                   <TouchableOpacity
                     style={styles.booleanOption}
                     onPress={() => {
-                      onVideoPickerPress();
+                      onVideoPickerPress(qIndex);
                       setActiveQuestionIndex(null);
                     }}
                   >
@@ -854,7 +899,7 @@ export const Form = ({ route }: any) => {
                       formSubmit();
                     }}
                   >
-                    <Text>Next</Text>
+                    <Text style={styles.buttonText}>Next</Text>
                   </TouchableOpacity>
                 </ScrollView>
               ) : (
@@ -917,6 +962,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 2,
     paddingHorizontal: 10,
+    backgroundColor: COLORS.liteWhite,
+  },
+  dropDownBox: {
+    width: `100%`,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 38,
+    borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.liteWhite,
   },
   placeholderStyle: {
