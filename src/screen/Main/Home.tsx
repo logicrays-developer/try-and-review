@@ -168,7 +168,11 @@ export const Home = () => {
 
   return (
     <View style={styles.container}>
-      {userData ? (
+      {!userData ? (
+        <View style={styles.headerContainer}>
+          <ActivityIndicator size={"small"} color={"#F97A02"} />
+        </View>
+      ) : (
         <React.Fragment>
           <View style={styles.topContainer}>
             <ImageBackground
@@ -207,10 +211,6 @@ export const Home = () => {
             </View>
           </View>
         </React.Fragment>
-      ) : (
-        <View style={styles.headerContainer}>
-          <ActivityIndicator size={"small"} color={"#F97A02"} />
-        </View>
       )}
     </View>
   );
