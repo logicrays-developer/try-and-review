@@ -10,29 +10,30 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Button, Label } from "../../components/index";
-import { CustomTextInput } from "../../components/index";
 import { Formik } from "formik";
 import { object, string } from "yup";
-import { COLORS } from "../../styles";
-import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+
+import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { makeAuthenticatedPostRequest } from "../../Config/Axios";
 import {
   setAccessToken,
   setRefreshToken,
   setServeyCountData,
 } from "../../slices/userSlice";
+import { Button, Label, CustomTextInput } from "../../components/index";
+import { COLORS } from "../../styles";
 
 const Login = () => {
   const navigation: object | any = useNavigation();
+  const dispatch = useDispatch();
   const passwordRef: object | any = createRef();
   const [visibleInput, setVisibleInput] = useState<boolean>(true);
   const [visibleLoader, setVisibleLoader] = useState<boolean>(false);
-  const dispatch = useDispatch();
   const emailRegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
+  // used formik-yup validation for validate user input
   const formValidation = object({
     email: string()
       .matches(emailRegExp, "Please enter valid Email")
@@ -42,6 +43,7 @@ const Login = () => {
       .required("Password field is required"),
   });
 
+  //Login api call for authenticate user with server
   const onLoginPress = async (email: string, password: string) => {
     try {
       setVisibleLoader(true);
@@ -52,6 +54,8 @@ const Login = () => {
         })
       );
       if (data.status == 200) {
+        // on successful user authentication, global app flow will be dashboard/ home route
+        // dispatching action for update global data
         dispatch(setAccessToken(data?.data?.token));
         dispatch(setRefreshToken(data?.data?.refresh_token));
         dispatch(setServeyCountData(null));

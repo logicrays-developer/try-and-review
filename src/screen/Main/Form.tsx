@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  Image,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -14,12 +13,12 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { COLORS } from "../../styles";
 import SelectDropdown from "react-native-select-dropdown";
 import DatePicker from "react-native-date-picker";
 import MaterialComminityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
 import ImagePicker from "react-native-image-crop-picker";
+import { useSelector, useDispatch } from "react-redux";
 import Modal from "react-native-modal";
 import {
   requestMultiple,
@@ -27,17 +26,24 @@ import {
   RESULTS,
   request,
 } from "react-native-permissions";
+
+//import custom components here
 import {
   makeAuthenticatedGetRequest,
   makeAuthenticatedPostRequest,
 } from "../../Config/Axios";
-import { useSelector, useDispatch } from "react-redux";
 import { TStateData, TUserProps } from "../../typings/SliceData";
 import { setServeyCountData } from "../../slices/userSlice";
+import { COLORS } from "../../styles";
 
 const { width } = Dimensions.get("screen");
 
 export const Form = ({ route }: any) => {
+  /**
+   * import global states here
+   * define new states here
+   * use hooks at the top of main function if possible
+   */
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
   const { questionId } = route.params;
@@ -52,6 +58,11 @@ export const Form = ({ route }: any) => {
   const [questionArr, setQuestionArr] = useState<any[]>([]);
   const today = new Date();
 
+  /**
+   * on screen focus, GET api for form question details called once, and using useState hooks
+   * store that data in questionArr state.
+   * from home screen coming with particular form id for getting data with api as route params named as questionId.
+   */
   useEffect(() => {
     const getQuestions = async () => {
       try {
@@ -61,8 +72,6 @@ export const Form = ({ route }: any) => {
         if (response.status === 200) {
           setQuestionArr(response.data);
           setLoading(false);
-        } else {
-          setLoading(false);
         }
       } catch (error) {
         setLoading(false);
@@ -70,13 +79,23 @@ export const Form = ({ route }: any) => {
       }
       /**
        * if nested question array is there,
-       * then need to manage here by flatten with parent_question_id and child_question_id
-       * and even not sufficient information regarding how to manage key params in body for child question when submit form
+       * then need to manage here by flatten with parent_question_id and child_question_id.
+       * Not sufficient information regarding how to manage key params in body for child question when submit form
+       * that's why not managed child questions
        */
     };
+
+    // custom function required to use async-await inside useEffect
     getQuestions();
   }, []);
 
+  /**
+   * filled form submitting with answer params and Profile params
+   * for answer params, all the question have one params added named as "ans"
+   * at the level with title of question
+   * for GET and POST api call, used common functions named as makeAuthenticatedGetRequest
+   * and makeAuthenticatedPostRequest in reducer slice.
+   */
   const formSubmit = async () => {
     setLoading(true);
     let profileData: any = {
@@ -97,6 +116,7 @@ export const Form = ({ route }: any) => {
     let params: any = {};
     questionArr.map((question) => {
       if (question.question?.ans) {
+        // preparing params as mentioned in docs
         if (question.question?.answer_type !== "rankingOfCriteria") {
           params[`question_${question.id}`] =
             question.question?.ans?.toString();
@@ -113,6 +133,8 @@ export const Form = ({ route }: any) => {
         }
       }
     });
+
+    //submitting or posting data in server
     try {
       const formSubmitResponse = await dispatch(
         makeAuthenticatedPostRequest(`/api/app/survey/${questionId}`, {
@@ -120,6 +142,9 @@ export const Form = ({ route }: any) => {
           address_verification_user: profileData,
         })
       );
+      /**
+       * on Success response, navigate to success screen
+       */
       if (formSubmitResponse.status === 200) {
         setLoading(false);
         navigation.navigate("Success");
@@ -127,12 +152,18 @@ export const Form = ({ route }: any) => {
       }
     } catch (error: any) {
       setLoading(false);
-      navigation.navigate("Success");
       dispatch(setServeyCountData(questionId));
     }
   };
 
+  /**
+   * requestCameraPermission
+   * @returns true/ false for camera usage permission
+   */
   const requestCameraPermission = async () => {
+    /**
+     * PLatform specific Code required for Permissions
+     */
     const granted = await request(
       Platform.OS === "ios"
         ? PERMISSIONS.IOS.CAMERA
@@ -155,7 +186,14 @@ export const Form = ({ route }: any) => {
     }
   };
 
+  /**
+   * requestStoragePermission
+   * @returns true/ false for media library usage permission
+   */
   const requestStoragePermission = async () => {
+    /**
+     * PLatform specific Code required for Permissions
+     */
     const granted = await requestMultiple(
       Platform.OS === "ios"
         ? [PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.MEDIA_LIBRARY]
@@ -188,6 +226,11 @@ export const Form = ({ route }: any) => {
     }
   };
 
+  /**
+   * @param qIndex main question array's index used to assign answer in particular that question,
+   * for Image and Video question type, integrated image still it's not shown in screen UI
+   * and for video only base64 conversion using new FileReader() pending
+   */
   const onImagePickerPress = async (qIndex: number) => {
     let checkPermission = await requestStoragePermission();
     if (checkPermission) {
@@ -230,7 +273,7 @@ export const Form = ({ route }: any) => {
       ImagePicker.openPicker({
         mediaType: "video",
       }).then((video) => {
-        console.log("Video result----", video);
+        console.log("Video result----", video, qIndex);
       });
     }
   };
@@ -241,32 +284,22 @@ export const Form = ({ route }: any) => {
       ImagePicker.openCamera({
         mediaType: "video",
       }).then((video) => {
-        console.log("Video result----", video);
+        console.log("Video result----", video, qIndex);
       });
     }
   };
 
+  /**
+   * @param data - as whole question as an object of array with details
+   * @param qIndex - index of that question from main question array
+   * based on type of answer_type parameter from question, answer will be render as below from switch-case
+   * @returns
+   */
   const _renderAnswer = (data: any, qIndex: number) => {
     switch (data.question.answer_type) {
       case "select":
         return (
           <View key={qIndex}>
-            {/* <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={data.question?.answers}
-              maxHeight={300}
-              labelField="answer"
-              valueField="id"
-              placeholder="Select item"
-              value={data.question?.ans}
-              key={qIndex}
-              onChange={(item) => {
-                data.question.ans = item.answer;
-                setQuestionArr(questionArr);
-              }}
-            /> */}
             <SelectDropdown
               data={data.question?.answers}
               onSelect={(selectedItem, index) => {
@@ -919,6 +952,9 @@ export const Form = ({ route }: any) => {
   );
 };
 
+/**
+ * use styles by creating it with StyleSheet at the end of file
+ */
 const styles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,

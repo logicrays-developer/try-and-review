@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+
 import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
 import { TStateData } from "../../typings/SliceData";
@@ -29,11 +30,8 @@ export const Profile = () => {
     (state: TStateData | any) => state.user
   );
   const [loading, setLoading] = useState<boolean>(true);
-  const { count_reviews, count_images, count_videos } =
-    userData?._embedded?.aggregations;
-  const { completion_pourcentage } = userData?._embedded;
-  const { first_name, last_name, pictures, email } = userData;
 
+  // get profile data when on profile screen, also update profile data in global states
   useEffect(() => {
     const getProfileData = async () => {
       try {
@@ -67,6 +65,7 @@ export const Profile = () => {
           resizeMode="cover"
         />
       </View>
+
       {/* Profile Content */}
       {loading ? (
         <View style={styles.headerContainer}>
@@ -81,7 +80,7 @@ export const Profile = () => {
             </Text>
             <View style={{ flexDirection: "row", flex: 1 }}>
               <View style={{ padding: 5 }}>
-                {!pictures ? (
+                {!userData?.pictures ? (
                   <FontAwesome6
                     name="user"
                     size={40}
@@ -90,7 +89,7 @@ export const Profile = () => {
                   />
                 ) : (
                   <Image
-                    source={{ uri: pictures }}
+                    source={{ uri: userData?.pictures }}
                     style={{ height: 40, width: 40, borderRadius: 20 }}
                     resizeMode="cover"
                   />
@@ -98,15 +97,15 @@ export const Profile = () => {
               </View>
               <View style={{ paddingHorizontal: 10, flex: 1 }}>
                 <Text style={[styles.titleText, { fontSize: 14 }]}>
-                  {first_name + " " + last_name}
+                  {userData?.first_name + " " + userData?.last_name}
                 </Text>
                 <Text
                   style={[styles.titleText, { color: "gray", fontSize: 12 }]}
                 >
-                  {email}
+                  {userData?.email}
                 </Text>
                 <Progress.Bar
-                  progress={completion_pourcentage / 100}
+                  progress={userData?._embedded?.completion_pourcentage / 100}
                   color="#4500E7"
                   style={{ marginTop: 7 }}
                   height={7}
@@ -114,7 +113,8 @@ export const Profile = () => {
                 <Text
                   style={{ color: "gray", fontSize: 12, paddingVertical: 3 }}
                 >
-                  {completion_pourcentage} % profile completed
+                  {userData?._embedded?.completion_pourcentage} % profile
+                  completed
                 </Text>
               </View>
             </View>
@@ -150,6 +150,7 @@ export const Profile = () => {
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* Extra */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>
@@ -174,14 +175,18 @@ export const Profile = () => {
               </View>
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_images}</Text>
+                  <Text style={styles.buttonText}>
+                    {userData?._embedded?.aggregations?.count_images}
+                  </Text>
                   <Text style={styles.buttonText}>Pictures</Text>
                 </View>
                 <FontAwesome name="camera" size={40} color={"#4500E7"} />
               </View>
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_videos}</Text>
+                  <Text style={styles.buttonText}>
+                    {userData?._embedded?.aggregations?.count_videos}
+                  </Text>
                   <Text style={styles.buttonText}>Videos</Text>
                 </View>
                 <FontAwesome name="video-camera" size={40} color={"#4500E7"} />
@@ -189,6 +194,7 @@ export const Profile = () => {
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* New extra data */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>
@@ -236,6 +242,7 @@ export const Profile = () => {
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* free data */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>

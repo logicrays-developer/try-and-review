@@ -18,6 +18,9 @@ import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
 import { TStateData } from "../../typings/SliceData";
 
+/**
+ * static data for form ids, based on these form ids form question will fetch
+ */
 const surveyData = [
   {
     id: "650db838123a4",
@@ -52,6 +55,11 @@ const surveyData = [
 ];
 
 export const Home = () => {
+  /**
+   * import global states here
+   * define new states here
+   * use hooks at the top of main function if possible
+   */
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
   const { userData, serveyCountData } = useSelector(
@@ -60,6 +68,11 @@ export const Home = () => {
 
   const dispatch = useDispatch();
 
+  /**
+   * fetching user profile data if it is not exist in storage
+   * get data here as it is required in survey form submission
+   * url parameter slug is used as 'in' here
+   */
   useEffect(() => {
     const getProfileData = async () => {
       setLoading(true);
@@ -79,13 +92,16 @@ export const Home = () => {
         setLoading(false);
       }
     };
+
+    // custom function required to use async-await inside useEffect
     !userData?.first_name && getProfileData();
   }, []);
 
+  // api for homescreen not available. so, static data used
   const renderHeader = () => {
     return (
       <View style={{ flex: 1 }}>
-        {/* Completed surveys counts */}
+        {/* Completed surveys counts display here */}
         <View style={styles.surveyCountContainer}>
           <View>
             <Text style={styles.completedSurveysCountText}>
@@ -146,6 +162,7 @@ export const Home = () => {
     );
   };
 
+  //individual survey card with static form id data
   const reviewCard = (item: any) => {
     return (
       <TouchableOpacity
@@ -221,6 +238,9 @@ export const Home = () => {
   );
 };
 
+/**
+ * use styles by creating it with StyleSheet at the end of file
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
