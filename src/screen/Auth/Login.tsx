@@ -19,7 +19,11 @@ import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { makeAuthenticatedPostRequest } from "../../Config/Axios";
-import { setAccessToken, setRefreshToken } from "../../slices/userSlice";
+import {
+  setAccessToken,
+  setRefreshToken,
+  setServeyCountData,
+} from "../../slices/userSlice";
 
 const Login = () => {
   const navigation: object | any = useNavigation();
@@ -50,6 +54,7 @@ const Login = () => {
       if (data.status == 200) {
         dispatch(setAccessToken(data?.data?.token));
         dispatch(setRefreshToken(data?.data?.refresh_token));
+        dispatch(setServeyCountData(null));
         navigation.reset({
           index: 0,
           routes: [

@@ -32,7 +32,8 @@ import {
   makeAuthenticatedPostRequest,
 } from "../../Config/Axios";
 import { useSelector, useDispatch } from "react-redux";
-import { TStateData } from "../../typings/SliceData";
+import { TStateData, TUserProps } from "../../typings/SliceData";
+import { setServeyCountData } from "../../slices/userSlice";
 
 const { width } = Dimensions.get("screen");
 
@@ -40,7 +41,9 @@ export const Form = ({ route }: any) => {
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
   const { questionId } = route.params;
-  const { userData } = useSelector((state: TStateData) => state.user);
+  const { userData }: TUserProps = useSelector(
+    (state: TStateData) => state.user
+  );
   const [ref, setRef] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState<null | Number>(
@@ -120,11 +123,12 @@ export const Form = ({ route }: any) => {
       if (formSubmitResponse.status === 200) {
         setLoading(false);
         navigation.navigate("Success");
-      } else {
-        setLoading(false);
+        dispatch(setServeyCountData(questionId));
       }
     } catch (error: any) {
       setLoading(false);
+      navigation.navigate("Success");
+      dispatch(setServeyCountData(questionId));
     }
   };
 

@@ -8,8 +8,13 @@ import {
   View,
 } from "react-native";
 import React from "react";
+import { useSelector } from "react-redux";
+import { TStateData } from "../../typings/SliceData";
 
 export const Reward = () => {
+  const { serveyCountData } = useSelector(
+    (state: TStateData | any) => state.user
+  );
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <ScrollView>
@@ -21,7 +26,7 @@ export const Reward = () => {
           }}
         >
           <Text style={styles.title}>Total of survey</Text>
-          <Text style={styles.number}>13</Text>
+          <Text style={styles.number}>{serveyCountData?.length}</Text>
         </View>
         <View style={{ paddingHorizontal: 20 }}>
           <Text style={{ color: "gray" }}>

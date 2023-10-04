@@ -25,7 +25,9 @@ import { TStateData } from "../../typings/SliceData";
 export const Profile = () => {
   const navigation: object | any = useNavigation();
   const dispatch = useDispatch();
-  const { userData } = useSelector((state: TStateData | any) => state.user);
+  const { userData, serveyCountData } = useSelector(
+    (state: TStateData | any) => state.user
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const { count_reviews, count_images, count_videos } =
     userData?._embedded?.aggregations;
@@ -163,7 +165,9 @@ export const Profile = () => {
             >
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_reviews}</Text>
+                  <Text style={styles.buttonText}>
+                    {serveyCountData?.length}
+                  </Text>
                   <Text style={styles.buttonText}>Survey</Text>
                 </View>
                 <MaterialIcons name="edit" size={40} color={"#4500E7"} />
@@ -196,12 +200,16 @@ export const Profile = () => {
             </Text>
 
             <View style={styles.bottonsContainer}>
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ alignItems: "center" }}
+                activeOpacity={1}
+                onPress={() => navigation.navigate("Reward")}
+              >
                 <View style={styles.button}>
                   <MaterialIcons name="edit" size={40} color={"#4500E7"} />
                 </View>
                 <Text style={styles.buttonText}>Survey</Text>
-              </View>
+              </TouchableOpacity>
 
               <View style={{ alignItems: "center" }}>
                 <View style={styles.button}>

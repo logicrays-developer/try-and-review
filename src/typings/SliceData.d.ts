@@ -1,3 +1,5 @@
+import { OrNull } from "react-native-modal/dist/types";
+
 type TUserData = {
   _embedded: Object;
   additional_address: String;
@@ -23,7 +25,7 @@ type TUserData = {
   username: String;
 };
 export type TUserProps = {
-  userData: TUserData | Object;
+  userData: TUserData | null;
   accessToken: string;
   refreshToken: string;
   serveyCountData: any;

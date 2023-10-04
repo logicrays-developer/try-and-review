@@ -3,7 +3,7 @@ import axiosInstance from "../Config/Axios/axiosInstance";
 import { TUserProps } from "../typings/SliceData";
 
 const initialState: TUserProps = {
-  userData: {},
+  userData: null,
   accessToken: "",
   refreshToken: "",
   serveyCountData: [],
@@ -33,7 +33,15 @@ const userSlice = createSlice({
       state.refreshToken = action.payload;
     },
     setServeyCountData(state, action) {
-      state.serveyCountData = action.payload;
+      const isAvailable = state.serveyCountData.some(
+        (i: string) => i == action.payload
+      );
+      if (!isAvailable) {
+        state.serveyCountData =
+          action.payload == null
+            ? []
+            : [...state.serveyCountData, action.payload];
+      }
     },
   },
 

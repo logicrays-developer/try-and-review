@@ -54,8 +54,10 @@ const surveyData = [
 export const Home = () => {
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { userData } = useSelector((state: TStateData | any) => state.user);
-  console.log("userData: ", userData._embedded);
+  const { userData, serveyCountData } = useSelector(
+    (state: TStateData | any) => state.user
+  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -65,7 +67,9 @@ export const Home = () => {
         const data = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        data?.status === 200 && dispatch(setUserData(data?.data));
+        if (data?.status === 200) {
+          dispatch(setUserData(data?.data));
+        }
         setLoading(false);
       } catch (error) {
         console.log(
@@ -75,7 +79,7 @@ export const Home = () => {
         setLoading(false);
       }
     };
-    !userData.first_name && getProfileData();
+    !userData?.first_name && getProfileData();
   }, []);
 
   const renderHeader = () => {
@@ -85,7 +89,8 @@ export const Home = () => {
         <View style={styles.surveyCountContainer}>
           <View>
             <Text style={styles.completedSurveysCountText}>
-              {userData?._embedded?.aggregations?.count_reviews}
+              {serveyCountData?.length}
+              {/* {userData?._embedded?.aggregations?.count_reviews} */}
             </Text>
           </View>
 
@@ -124,7 +129,7 @@ export const Home = () => {
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
             }}
-            style={styles.imageReview}
+            style={[styles.imageReview, { backgroundColor: COLORS.lightGrey }]}
             resizeMode="cover"
           />
           <Text style={styles.descriptionText}>
@@ -158,6 +163,7 @@ export const Home = () => {
             height: deviceWidth / 4 - 30,
             width: deviceWidth / 4 - 30,
             borderRadius: 10,
+            backgroundColor: COLORS.lightGrey,
           }}
           resizeMode="cover"
         />

@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import { deviceWidth } from "../../utils/Dimension";
 import { COLORS } from "../../styles";
+import { useNavigation } from "@react-navigation/native";
 
 const { height, width } = Dimensions.get("screen");
 
 export const Success = () => {
+  const navigation: any = useNavigation();
   return (
     <View style={styles.mainContainer}>
       <StatusBar backgroundColor="#CDE9E1" />
@@ -32,7 +34,19 @@ export const Success = () => {
           Did you know that you can view your record of point transactions.
           Learn more here.
         </Text>
-        <TouchableOpacity style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "Home",
+                },
+              ],
+            })
+          }
+        >
           <Text style={styles.buttonText}>Back to homepage</Text>
         </TouchableOpacity>
       </View>
