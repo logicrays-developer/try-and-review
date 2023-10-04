@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -52,25 +52,25 @@ const surveyData = [
 
 export const Home = () => {
   const navigation: object | any = useNavigation();
+  const [loading, setLoading] = useState(false);
   const { userData } = useSelector((state: any) => state.user);
-  const { count_reviews } = userData?._embedded?.aggregations;
-  const { first_name, last_name } = userData;
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getProfileData = async () => {
+      setLoading(true);
       try {
         const { data } = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        console.log("data", data);
         dispatch(setUserData(data));
+        setLoading(false);
       } catch (error) {
         console.log("Error ", error);
+        setLoading(false);
       }
     };
-
-    !userData && getProfileData();
+    !userData.first_name && getProfileData();
   }, []);
 
   const renderHeader = () => {
@@ -80,7 +80,7 @@ export const Home = () => {
         <View style={styles.surveyCountContainer}>
           <View>
             <Text style={styles.completedSurveysCountText}>
-              {count_reviews}
+              {userData?._embedded?.aggregations?.count_reviews}
             </Text>
           </View>
           <View
@@ -168,7 +168,7 @@ export const Home = () => {
 
   return (
     <View style={styles.container}>
-      {!userData ? (
+      {loading ? (
         <View style={styles.headerContainer}>
           <ActivityIndicator size={"small"} color={"#F97A02"} />
         </View>
@@ -184,7 +184,7 @@ export const Home = () => {
             <Text
               style={[styles.topText, { marginTop: 20, fontWeight: "bold" }]}
             >
-              Hi {first_name + " " + last_name}
+              Hi {userData?.first_name + " " + userData?.last_name}
             </Text>
             <Text style={[styles.topText, { marginTop: 5, fontSize: 14 }]}>
               Complete minimum of 10 surveys and question & stand a changes to
@@ -225,6 +225,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
+    backgroundColor: COLORS.white,
   },
   topContainer: {
     flex: 0.15,
