@@ -1,4 +1,5 @@
 import {
+  Image,
   ImageBackground,
   SafeAreaView,
   ScrollView,
@@ -30,32 +31,66 @@ export const Reward = () => {
         </View>
         <View style={styles.coupon}>
           <View style={styles.leftView} />
-          <View style={styles.dashes} />
           <View style={styles.rightView} />
-
-          <View
-            style={{
-              width: "70%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>API data</Text>
+          <View style={styles.dataView}>
+            <Image
+              resizeMode="contain"
+              source={require("../../assets/images/FreeReward.png")}
+              style={{ width: 60, height: 60 }}
+            />
+            <Text
+              style={{ fontWeight: "500", color: "gray", textAlign: "center" }}
+            >
+              $5 pocket money for a child in need
+            </Text>
           </View>
-          <View
-            style={{
-              width: "30%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>$5000</Text>
+          <View style={styles.dashes} />
+          <View style={styles.priceView}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "gray" }}>
+              $5000
+            </Text>
           </View>
         </View>
-        {/* <ImageBackground
-          style={{ height: 100, width: 300 }}
-          source={require("../../assets/images/Coupon.png")}
-        /> */}
+        <View style={styles.coupon}>
+          <View style={styles.leftView} />
+          <View style={styles.rightView} />
+          <View style={styles.dataView}>
+            <Image
+              resizeMode="contain"
+              source={require("../../assets/images/donut.png")}
+              style={{ width: 60, height: 60 }}
+            />
+            <Text style={{ fontWeight: "500", color: "gray" }}>
+              $5 feed a hungry dog or cat
+            </Text>
+          </View>
+          <View style={styles.dashes} />
+          <View style={styles.priceView}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "gray" }}>
+              $10000
+            </Text>
+          </View>
+        </View>
+        <View style={styles.coupon}>
+          <View style={styles.leftView} />
+          <View style={styles.rightView} />
+          <View style={styles.dataView}>
+            <Image
+              resizeMode="contain"
+              source={require("../../assets/images/reward.png")}
+              style={{ width: 60, height: 60 }}
+            />
+            <Text style={{ fontWeight: "500", color: "gray" }}>
+              $10 intractive tour for animal
+            </Text>
+          </View>
+          <View style={styles.dashes} />
+          <View style={styles.priceView}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "gray" }}>
+              $10000
+            </Text>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -79,8 +114,9 @@ const styles = StyleSheet.create({
     margin: 15,
     borderRadius: 20,
     backgroundColor: "white",
-    position: "relative",
+    // position: "relative",
     flexDirection: "row",
+    flex: 1,
   },
   leftView: {
     height: 40,
@@ -111,8 +147,21 @@ const styles = StyleSheet.create({
     borderColor: "#D0D0D0",
     height: 120,
     width: 1,
-    position: "absolute",
-    right: "30%",
+    // position: "absolute",
+    // right: "30%",
     borderStyle: "dashed",
+  },
+  dataView: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 2.5,
+    padding: 20,
+    left: 10,
+  },
+  priceView: {
+    flex: 1,
+    padding: 15,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

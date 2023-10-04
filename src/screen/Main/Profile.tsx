@@ -55,15 +55,13 @@ export const Profile = () => {
       {/* App header */}
       <View style={styles.headerStyle}>
         <Feather name={"search"} size={28} />
-        <TouchableOpacity onPress={() => navigation.navigate("Reward")}>
-          <Image
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
-            }}
-            style={styles.imageFlag}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
+        <Image
+          source={{
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
+          }}
+          style={styles.imageFlag}
+          resizeMode="cover"
+        />
       </View>
       {/* Profile Content */}
       {loading ? (
@@ -239,12 +237,16 @@ export const Profile = () => {
             </Text>
 
             <View style={styles.bottonsContainer}>
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ alignItems: "center" }}
+                activeOpacity={1}
+                onPress={() => navigation.navigate("Reward")}
+              >
                 <View style={styles.button}>
                   <MaterialIcons name="edit" size={40} color={"#4500E7"} />
                 </View>
                 <Text style={styles.buttonText}>Survey</Text>
-              </View>
+              </TouchableOpacity>
 
               <View style={{ alignItems: "center" }}>
                 <View style={styles.button}>
