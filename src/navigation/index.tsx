@@ -18,7 +18,7 @@ const AppRouter = () => {
         screenOptions={() => ({
           headerShown: false,
         })}
-        initialRouteName={!accessToken ? "Profile" : "Login"}
+        initialRouteName={accessToken ? "Home" : "Login"}
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
@@ -26,7 +26,6 @@ const AppRouter = () => {
         <Stack.Screen name="Form" component={Form} />
         <Stack.Screen name="Reward" component={Reward} />
         <Stack.Screen name="Success" component={Success} />
-        <Stack.Screen name="Reward" component={Reward} />
       </Stack.Navigator>
     </NavigationContainer>
   );

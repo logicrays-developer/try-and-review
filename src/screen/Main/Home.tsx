@@ -55,6 +55,7 @@ export const Home = () => {
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
   const { userData } = useSelector((state: TStateData | any) => state.user);
+  console.log("userData: ", userData._embedded);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -84,19 +85,13 @@ export const Home = () => {
               {userData?._embedded?.aggregations?.count_reviews}
             </Text>
           </View>
-          <View
-            style={{
-              alignSelf: "flex-end",
-            }}
-          >
-            <Text style={styles.divisionText}>/</Text>
-          </View>
+
           <View style={styles.outOfMainContainer}>
             <View style={styles.outOfCountContainer}>
               <Text style={styles.surveysText}>Surveys</Text>
             </View>
             <View>
-              <Text style={styles.totalOfCountText}>100</Text>
+              <Text style={styles.totalOfCountText}>/100</Text>
             </View>
           </View>
         </View>
@@ -127,7 +122,7 @@ export const Home = () => {
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
             }}
             style={styles.imageReview}
-            resizeMode="contain"
+            resizeMode="cover"
           />
           <Text style={styles.descriptionText}>
             <Text style={{ fontSize: 13 }}>
@@ -161,7 +156,7 @@ export const Home = () => {
             width: deviceWidth / 4 - 30,
             borderRadius: 10,
           }}
-          resizeMode="contain"
+          resizeMode="cover"
         />
       </TouchableOpacity>
     );
@@ -257,7 +252,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   completedSurveysCountText: {
-    fontSize: 45,
+    fontSize: 60,
     color: "#384455",
     fontWeight: "500",
   },
@@ -268,7 +263,7 @@ const styles = StyleSheet.create({
   },
   outOfMainContainer: {
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
   },
   outOfCountContainer: {
     backgroundColor: COLORS.lightBackground,

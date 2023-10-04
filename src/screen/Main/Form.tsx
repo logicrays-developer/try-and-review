@@ -814,7 +814,7 @@ export const Form = ({ route }: any) => {
   };
 
   return (
-    <View style={{ backgroundColor: COLORS.lightGrey, flex: 1 }}>
+    <View style={{ backgroundColor: COLORS.white, flex: 1 }}>
       <SafeAreaView style={styles.safeAreaContainer}>
         <View style={{ flex: 1 }}>
           <View style={styles.headerStyle}>
@@ -885,9 +885,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 55,
+    paddingVertical: 10,
     backgroundColor: COLORS.white,
     paddingHorizontal: 20,
+    borderBottomColor: COLORS.lightGrey,
+    borderBottomWidth: 7,
   },
   headerContainer: {
     alignItems: "center",
