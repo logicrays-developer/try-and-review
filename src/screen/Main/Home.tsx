@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "../../styles";
 import { IMAGES } from "../../utils/ImageSource";
@@ -53,6 +54,7 @@ export const Home = () => {
   const navigation: object | any = useNavigation();
   const { userData } = useSelector((state: any) => state.user);
   const { count_reviews } = userData?._embedded?.aggregations;
+  const { first_name, last_name } = userData;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -61,6 +63,7 @@ export const Home = () => {
         const { data } = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
+        console.log("data", data);
         dispatch(setUserData(data));
       } catch (error) {
         console.log("Error ", error);
@@ -165,40 +168,50 @@ export const Home = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <ImageBackground
-          source={IMAGES.andLogo}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-          tintColor={COLORS.lightBackground}
-        />
-        <Text style={[styles.topText, { marginTop: 20, fontWeight: "bold" }]}>
-          Hi Alexia
-        </Text>
-        <Text style={[styles.topText, { marginTop: 5, fontSize: 14 }]}>
-          Complete minimum of 10 surveys and question & stand a changes to win
-          1,000 points this month.
-        </Text>
-      </View>
-      <View style={styles.bottomContainer}>
-        <View
-          style={{
-            paddingHorizontal: 30,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <FlatList
-            keyExtractor={(item, index) => `card` + index.toString()}
-            data={surveyData}
-            renderItem={reviewCard}
-            ListEmptyComponent={null}
-            numColumns={4}
-            showsVerticalScrollIndicator={false}
-            ListHeaderComponent={renderHeader}
-          />
+      {userData ? (
+        <React.Fragment>
+          <View style={styles.topContainer}>
+            <ImageBackground
+              source={IMAGES.andLogo}
+              style={styles.backgroundImage}
+              resizeMode="cover"
+              tintColor={COLORS.lightBackground}
+            />
+            <Text
+              style={[styles.topText, { marginTop: 20, fontWeight: "bold" }]}
+            >
+              Hi {first_name + " " + last_name}
+            </Text>
+            <Text style={[styles.topText, { marginTop: 5, fontSize: 14 }]}>
+              Complete minimum of 10 surveys and question & stand a changes to
+              win 1,000 points this month.
+            </Text>
+          </View>
+          <View style={styles.bottomContainer}>
+            <View
+              style={{
+                paddingHorizontal: 30,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <FlatList
+                keyExtractor={(item, index) => `card` + index.toString()}
+                data={surveyData}
+                renderItem={reviewCard}
+                ListEmptyComponent={null}
+                numColumns={4}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={renderHeader}
+              />
+            </View>
+          </View>
+        </React.Fragment>
+      ) : (
+        <View style={styles.headerContainer}>
+          <ActivityIndicator size={"small"} color={"#F97A02"} />
         </View>
-      </View>
+      )}
     </View>
   );
 };
@@ -207,6 +220,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  headerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
   topContainer: {
     flex: 0.15,
