@@ -17,7 +17,7 @@ const AppRouter = () => {
         screenOptions={() => ({
           headerShown: false,
         })}
-        initialRouteName={!accessToken ? "Form" : "Login"}
+        initialRouteName={!accessToken ? "Profile" : "Login"}
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />

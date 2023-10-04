@@ -20,39 +20,18 @@ import { useNavigation } from "@react-navigation/native";
 export const Profile = () => {
   const navigation = useNavigation();
 
-  useEffect(() => {
-    fetch(`https://preprod.tryandreview.com/api/app/login`, {
-      method: "POST",
-      headers: {
-        contentType: "json",
-      },
-      body: JSON.stringify({
-        username: "tryandreview_uat",
-        password: "UATuser@tryandreview1",
-      }),
-    })
-      // fetch(`https://preprod.tryandreview.com/api/app/in/users/profile`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((e) => console.log("Error: ", e.message));
-  }, []);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* App header */}
       <View style={styles.headerStyle}>
         <Feather name={"search"} size={28} />
-        <TouchableOpacity onPress={() => navigation.navigate("Reward")}>
-          <Image
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
-            }}
-            style={styles.imageFlag}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
+        <Image
+          source={{
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCknpmdGjBH1Fld_7xTxFrcf_l-TzL4l0vuA&usqp=CAU",
+          }}
+          style={styles.imageFlag}
+          resizeMode="cover"
+        />
       </View>
       {/* Profile Content */}
       <ScrollView>
@@ -156,12 +135,16 @@ export const Profile = () => {
           </Text>
 
           <View style={styles.bottonsContainer}>
-            <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              style={{ alignItems: "center" }}
+              activeOpacity={1}
+              onPress={() => navigation.navigate("Reward")}
+            >
               <View style={styles.button}>
                 <MaterialIcons name="edit" size={40} color={"#4500E7"} />
               </View>
               <Text style={styles.buttonText}>Survey</Text>
-            </View>
+            </TouchableOpacity>
 
             <View style={{ alignItems: "center" }}>
               <View style={styles.button}>
