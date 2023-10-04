@@ -61,13 +61,16 @@ export const Home = () => {
     const getProfileData = async () => {
       setLoading(true);
       try {
-        const { data } = await dispatch(
+        const data = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        dispatch(setUserData(data));
+        data?.status === 200 && dispatch(setUserData(data?.data));
         setLoading(false);
       } catch (error) {
-        console.log("Error ", error);
+        console.log(
+          "Error from profile APIs calling in home-screen....",
+          error
+        );
         setLoading(false);
       }
     };
@@ -127,7 +130,7 @@ export const Home = () => {
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
             }}
             style={styles.imageReview}
-            resizeMode="contain"
+            resizeMode="cover"
           />
           <Text style={styles.descriptionText}>
             <Text style={{ fontSize: 13 }}>
@@ -161,7 +164,7 @@ export const Home = () => {
             width: deviceWidth / 4 - 30,
             borderRadius: 10,
           }}
-          resizeMode="contain"
+          resizeMode="cover"
         />
       </TouchableOpacity>
     );

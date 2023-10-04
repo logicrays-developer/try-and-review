@@ -55,24 +55,28 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
                 showMessage({
                   message: language.serverForbiddenError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               case 404:
                 showMessage({
                   message: language.serverNotFoundError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               case 500:
                 showMessage({
                   message: language.serverGenericError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               default:
                 showMessage({
                   message: language.generalError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
             }
@@ -80,12 +84,14 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
             showMessage({
               message: language.serverRequestError,
               type: "danger",
+              duration: 3000,
             });
             return reject(error);
           } else {
             showMessage({
               message: language.serverGenericError,
               type: "danger",
+              duration: 3000,
             });
             return reject(error);
           }
@@ -129,6 +135,7 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
                 showMessage({
                   message: dataError?.message,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               case 401:
@@ -141,24 +148,28 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
                 showMessage({
                   message: language.serverForbiddenError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               case 404:
                 showMessage({
                   message: language.serverNotFoundError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               case 500:
                 showMessage({
                   message: language.serverGenericError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
               default:
                 showMessage({
                   message: language.generalError,
                   type: "danger",
+                  duration: 3000,
                 });
                 return reject(error);
             }
@@ -166,12 +177,14 @@ export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
             showMessage({
               message: language.serverRequestError,
               type: "danger",
+              duration: 3000,
             });
             return reject(error);
           } else {
             showMessage({
               message: language.serverGenericError,
               type: "danger",
+              duration: 3000,
             });
             return reject(error);
           }

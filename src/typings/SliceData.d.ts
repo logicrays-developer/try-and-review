@@ -23,7 +23,7 @@ type TUserData = {
   username: String;
 };
 export type TUserProps = {
-  userData: TUserData;
+  userData: TUserData | object;
   accessToken: string;
   refreshToken: string;
 };
