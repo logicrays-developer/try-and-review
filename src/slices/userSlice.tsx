@@ -1,23 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../Config/Axios/axiosInstance";
+import { TUserProps } from "../typings/SliceData";
 
-interface IUserSlice {
-  userData: object;
-  accessToken: string;
-  refreshToken: string;
-  isExistingUser: boolean;
-}
-
-const initialState: IUserSlice = {
+const initialState: TUserProps = {
   userData: {},
   accessToken: "",
   refreshToken: "",
-  isExistingUser: false,
 };
 
 export const updateAccessToken = createAsyncThunk(
   "updateToken",
-  async (tokens: any) => {
+  async (tokens: string) => {
     const response = await axiosInstance.post("/api/app/token/refresh", {
       refresh_token: tokens,
     });
@@ -37,9 +30,6 @@ const userSlice = createSlice({
     },
     setRefreshToken(state, action) {
       state.refreshToken = action.payload;
-    },
-    setExistingUser(state, action) {
-      state.isExistingUser = action.payload;
     },
   },
 

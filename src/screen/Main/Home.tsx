@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
+import { TStateData } from "../../typings/SliceData";
 
 const surveyData = [
   {
@@ -53,7 +54,7 @@ const surveyData = [
 export const Home = () => {
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { userData } = useSelector((state: any) => state.user);
+  const { userData } = useSelector((state: TStateData | any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -146,7 +147,7 @@ export const Home = () => {
     return (
       <TouchableOpacity
         activeOpacity={0.5}
-        style={{ padding: 7 }}
+        style={{ padding: deviceWidth / 70 }}
         onPress={() =>
           navigation?.navigate("Form", {
             questionId: item?.item?.id,
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     flex: 0.15,
+    justifyContent: "center",
   },
   bottomContainer: {
     flex: 0.85,

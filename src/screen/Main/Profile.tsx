@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -15,17 +16,17 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
+import { TStateData } from "../../typings/SliceData";
 
 export const Profile = () => {
   const navigation: object | any = useNavigation();
   const dispatch = useDispatch();
-  const { userData } = useSelector((state: any) => state.user);
+  const { userData } = useSelector((state: TStateData | any) => state.user);
   const [loading, setLoading] = useState<boolean>(true);
   const { count_reviews, count_images, count_videos } =
     userData?._embedded?.aggregations;
@@ -48,6 +49,7 @@ export const Profile = () => {
 
     getProfileData();
   }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* App header */}
@@ -122,15 +124,27 @@ export const Profile = () => {
                 marginVertical: 15,
               }}
             >
-              <View style={styles.boxView}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                style={styles.boxView}
+                onPress={() => console.log("verify email button click")}
+              >
                 <Text style={styles.boxText}>Verify email</Text>
-              </View>
-              <View style={styles.boxView}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                style={styles.boxView}
+                onPress={() => console.log("verify phone button click")}
+              >
                 <Text style={styles.boxText}>Verify phone number</Text>
-              </View>
-              <View style={styles.boxView}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                style={styles.boxView}
+                onPress={() => console.log("view profile button click")}
+              >
                 <Text style={styles.boxText}>View profile</Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.separator} />
@@ -266,7 +280,6 @@ export const Profile = () => {
 const styles = StyleSheet.create({
   headerStyle: {
     padding: 10,
-    // borderWidth: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",

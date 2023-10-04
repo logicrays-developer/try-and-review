@@ -162,7 +162,7 @@ const Login = () => {
                     {/* Divider */}
                     <Label title="- OR -" containerStyle={{ marginTop: 10 }} />
 
-                    {/* Social Login Button */}
+                    {/* Social Facebook Button */}
                     <Button
                       title="Sign in via Facebook"
                       containerStyles={styles.buttonContainer}
@@ -170,7 +170,7 @@ const Login = () => {
                       iconName={"logo-facebook"}
                       onPress={() => console.log("Login with facebook action")}
                     />
-
+                    {/* Social Google Button */}
                     <Button
                       title="Sign in via Google"
                       containerStyles={styles.buttonContainer}

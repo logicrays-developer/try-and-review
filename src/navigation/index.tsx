@@ -5,8 +5,9 @@ import { TStateData } from "../typings/SliceData";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screen/Auth/Login";
 import { Form, Home, Profile, Reward, Success } from "../screen/Main";
+import { TStackParam } from "../typings/Navigation";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<TStackParam>();
 
 const AppRouter = () => {
   const { accessToken } = useSelector((state: TStateData) => state.user);
