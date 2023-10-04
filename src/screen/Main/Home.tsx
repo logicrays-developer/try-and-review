@@ -55,6 +55,7 @@ export const Home = () => {
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
   const { userData } = useSelector((state: TStateData | any) => state.user);
+  console.log("userData: ", userData._embedded);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -87,19 +88,13 @@ export const Home = () => {
               {userData?._embedded?.aggregations?.count_reviews}
             </Text>
           </View>
-          <View
-            style={{
-              alignSelf: "flex-end",
-            }}
-          >
-            <Text style={styles.divisionText}>/</Text>
-          </View>
+
           <View style={styles.outOfMainContainer}>
             <View style={styles.outOfCountContainer}>
               <Text style={styles.surveysText}>Surveys</Text>
             </View>
             <View>
-              <Text style={styles.totalOfCountText}>100</Text>
+              <Text style={styles.totalOfCountText}>/100</Text>
             </View>
           </View>
         </View>
@@ -260,7 +255,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   completedSurveysCountText: {
-    fontSize: 45,
+    fontSize: 60,
     color: "#384455",
     fontWeight: "500",
   },
@@ -271,7 +266,7 @@ const styles = StyleSheet.create({
   },
   outOfMainContainer: {
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
   },
   outOfCountContainer: {
     backgroundColor: COLORS.lightBackground,

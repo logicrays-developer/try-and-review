@@ -23,9 +23,10 @@ type TUserData = {
   username: String;
 };
 export type TUserProps = {
-  userData: TUserData | object;
+  userData: TUserData | Object;
   accessToken: string;
   refreshToken: string;
+  serveyCountData: any;
 };
 
 export type TStateData = {
