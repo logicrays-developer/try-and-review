@@ -52,6 +52,7 @@ const surveyData = [
 export const Home = () => {
   const navigation: object | any = useNavigation();
   const { userData } = useSelector((state: any) => state.user);
+  const { count_reviews } = userData?._embedded?.aggregations;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -75,7 +76,9 @@ export const Home = () => {
         {/* Completed surveys counts */}
         <View style={styles.surveyCountContainer}>
           <View>
-            <Text style={styles.completedSurveysCountText}>15</Text>
+            <Text style={styles.completedSurveysCountText}>
+              {count_reviews}
+            </Text>
           </View>
           <View
             style={{

@@ -18,6 +18,7 @@ const language = {
 
 /**
  * @param url will contain GET request url endpoints.
+ * @error [401] - If access-token expire got 401 error that time calling apis of refresh token and got again accesstoken and refresh token.
  * @returns if response got success when return resolve body otherwise error portion render it.
  */
 
@@ -42,7 +43,6 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
           return resolve(returnValue);
         })
         .catch(async function (error) {
-          console.log("error ----", error);
           if (error.response) {
             const status: any = error.response.status;
             const dataError: any = error.response.data;
@@ -97,6 +97,7 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
 /**
  * @param url will contain POST request url endpoints.
  * @param data also passing params data.
+ * @error [401] - If access-token expire got 401 error that time calling apis of refresh token and got again accesstoken and refresh token.
  * @returns if response got success when return resolve body otherwise error portion render it.
  */
 export const makeAuthenticatedPostRequest = (url: string, data: any): any => {

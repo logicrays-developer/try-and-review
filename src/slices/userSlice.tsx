@@ -19,10 +19,9 @@ export const updateAccessToken = createAsyncThunk(
   "updateToken",
   async (tokens: any) => {
     const response = await axiosInstance.post("/api/app/token/refresh", {
-      refresh: tokens,
+      refresh_token: tokens,
     });
-    console.log("Response for Update refresh token -----", response);
-    return response?.data?.access;
+    return response?.data?.token;
   }
 );
 
