@@ -31,20 +31,22 @@ import {
   makeAuthenticatedGetRequest,
   makeAuthenticatedPostRequest,
 } from "../../Config/Axios";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { TStateData } from "../../typings/SliceData";
 
 const { width } = Dimensions.get("screen");
 
 export const Form = ({ route }: any) => {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
+  const dispatch = useDispatch();
   const { questionId } = route.params;
+  const { userData } = useSelector((state: TStateData) => state.user);
   const [ref, setRef] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState<null | Number>(
     null
   );
-  const [questionArr, setQuestionArr] = useState([]);
-  const dispatch = useDispatch();
+  const [questionArr, setQuestionArr] = useState<any[]>([]);
   const today = new Date();
 
   useEffect(() => {
@@ -66,12 +68,29 @@ export const Form = ({ route }: any) => {
       /**
        * if nested question array is there,
        * then need to manage here by flatten with parent_question_id and child_question_id
+       * and even not sufficient information regarding how to manage key params in body for child question when submit form
        */
     };
     getQuestions();
   }, []);
 
   const formSubmit = async () => {
+    setLoading(true);
+    let profileData: any = {
+      birthday: userData?.birth_day,
+      parentAuthorization: "on",
+      address: userData?.address,
+      additionalAddress: userData?.additional_address,
+      postalCode: Number(userData?.postal_code),
+      city: userData?.city,
+      state: userData?.state,
+      district: userData?.district,
+      subdistrict: userData?.subdistrict,
+      province: userData?.province,
+      country: userData?.country,
+      phone: userData?.phone,
+      email: userData?.email,
+    };
     let params: any = {};
     questionArr.map((question) => {
       if (question.question?.ans) {
@@ -80,7 +99,7 @@ export const Form = ({ route }: any) => {
             question.question?.ans?.toString();
         } else {
           let answerString = "";
-          question.question?.ans.map((opt) => {
+          question.question?.ans.map((opt: any) => {
             answerString =
               answerString +
               `${question.question.answers[opt.optionIndex].answer}-${
@@ -91,7 +110,22 @@ export const Form = ({ route }: any) => {
         }
       }
     });
-    console.log("Ans here---", params);
+    try {
+      const formSubmitResponse = await dispatch(
+        makeAuthenticatedPostRequest(`/api/app/survey/${questionId}`, {
+          participation_form: params,
+          address_verification_user: profileData,
+        })
+      );
+      if (formSubmitResponse.status === 200) {
+        setLoading(false);
+        navigation.navigate("Success");
+      } else {
+        setLoading(false);
+      }
+    } catch (error: any) {
+      setLoading(false);
+    }
   };
 
   const requestCameraPermission = async () => {
@@ -126,7 +160,6 @@ export const Form = ({ route }: any) => {
             PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
           ]
     );
-    console.log("Permission here----", granted);
     if (
       (Platform.OS === "android" &&
         granted["android.permission.READ_MEDIA_IMAGES"] === RESULTS.GRANTED &&
@@ -151,7 +184,8 @@ export const Form = ({ route }: any) => {
     }
   };
 
-  const onImagePickerPress = async () => {
+  const onImagePickerPress = async (qIndex: number) => {
+    console.log("Question here----", questionArr[qIndex].question);
     let checkPermission = await requestStoragePermission();
     if (checkPermission) {
       ImagePicker.openPicker({
@@ -165,7 +199,8 @@ export const Form = ({ route }: any) => {
     }
   };
 
-  const onImageCameraPress = async () => {
+  const onImageCameraPress = async (qIndex: number) => {
+    console.log("Question here----", questionArr[qIndex].question);
     let checkPermission = await requestCameraPermission();
     if (checkPermission) {
       ImagePicker.openCamera({
@@ -219,6 +254,7 @@ export const Form = ({ route }: any) => {
               onChange={(item) => {
                 data.question.ans = item.answer;
                 setQuestionArr(questionArr);
+                setRef(!ref);
               }}
             />
           </View>
@@ -535,7 +571,7 @@ export const Form = ({ route }: any) => {
                   <TouchableOpacity
                     style={[styles.booleanOption]}
                     onPress={() => {
-                      onImageCameraPress();
+                      onImageCameraPress(qIndex);
                       setActiveQuestionIndex(null);
                     }}
                   >
@@ -552,7 +588,7 @@ export const Form = ({ route }: any) => {
                   <TouchableOpacity
                     style={styles.booleanOption}
                     onPress={() => {
-                      onImagePickerPress();
+                      onImagePickerPress(qIndex);
                       setActiveQuestionIndex(null);
                     }}
                   >
