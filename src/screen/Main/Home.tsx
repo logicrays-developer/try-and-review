@@ -62,13 +62,16 @@ export const Home = () => {
     const getProfileData = async () => {
       setLoading(true);
       try {
-        const { data } = await dispatch(
+        const data = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        dispatch(setUserData(data));
+        data?.status === 200 && dispatch(setUserData(data?.data));
         setLoading(false);
       } catch (error) {
-        console.log("Error ", error);
+        console.log(
+          "Error from profile APIs calling in home-screen....",
+          error
+        );
         setLoading(false);
       }
     };

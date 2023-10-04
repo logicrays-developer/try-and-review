@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -36,14 +35,17 @@ export const Profile = () => {
   useEffect(() => {
     const getProfileData = async () => {
       try {
-        const { data } = await dispatch(
+        const data = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        dispatch(setUserData(data));
+        data?.status === 200 && dispatch(setUserData(data?.data));
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        console.log("Error ", error);
+        console.log(
+          "Error from profile APIs calling in profile screen....",
+          error
+        );
       }
     };
 
@@ -88,7 +90,7 @@ export const Profile = () => {
                   <Image
                     source={{ uri: pictures }}
                     style={{ height: 40, width: 40, borderRadius: 20 }}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
                 )}
               </View>
