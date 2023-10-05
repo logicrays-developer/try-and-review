@@ -10,13 +10,15 @@ import {
 } from "react-native";
 import { deviceWidth } from "../../utils/Dimension";
 import { COLORS } from "../../styles";
+import { useNavigation } from "@react-navigation/native";
 
 const { height, width } = Dimensions.get("screen");
 
 export const Success = () => {
+  const navigation: any = useNavigation();
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor="#CDE9E1" />
+      <StatusBar backgroundColor={COLORS.pistaBackground} />
       <View style={styles.imageContainer}>
         <Image
           source={require("../../assets/images/Star_Congratulation.png")}
@@ -32,7 +34,19 @@ export const Success = () => {
           Did you know that you can view your record of point transactions.
           Learn more here.
         </Text>
-        <TouchableOpacity style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "Home",
+                },
+              ],
+            })
+          }
+        >
           <Text style={styles.buttonText}>Back to homepage</Text>
         </TouchableOpacity>
       </View>
@@ -42,7 +56,7 @@ export const Success = () => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
     flex: 1,
     paddingVertical: height * 0.125,
   },
@@ -59,11 +73,11 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 35,
     fontWeight: "500",
-    color: "#283671",
+    color: COLORS.labelText,
   },
   descriptionText: {
     fontSize: 20,
-    color: "#283671",
+    color: COLORS.labelText,
     maxWidth: deviceWidth * 0.8,
     textAlign: "center",
     marginBottom: 20,
@@ -71,7 +85,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     height: 50,
     width: width * 0.6,
-    backgroundColor: "#283671",
+    backgroundColor: COLORS.labelText,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,

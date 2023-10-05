@@ -8,8 +8,12 @@ import {
   View,
 } from "react-native";
 import React from "react";
+import { useSelector } from "react-redux";
+import { TStateData } from "../../typings/SliceData";
+import { COLORS } from "../../styles";
 
 export const Reward = () => {
+  const { userData } = useSelector((state: TStateData) => state.user);
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <ScrollView>
@@ -21,7 +25,9 @@ export const Reward = () => {
           }}
         >
           <Text style={styles.title}>Total of survey</Text>
-          <Text style={styles.number}>13</Text>
+          <Text style={styles.number}>
+            {userData?._embedded?.aggregations?.count_reviews}
+          </Text>
         </View>
         <View style={{ paddingHorizontal: 20 }}>
           <Text style={{ color: "gray" }}>
@@ -100,16 +106,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#D0D0D0",
+    color: COLORS.darkGrey,
   },
   number: {
     fontSize: 90,
     fontWeight: "600",
-    color: "#283671",
+    color: COLORS.labelText,
   },
   coupon: {
     borderWidth: 2,
-    borderColor: "#D0D0D0",
+    borderColor: COLORS.darkGrey,
     height: 120,
     margin: 15,
     borderRadius: 20,
@@ -122,7 +128,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRightWidth: 3,
-    borderColor: "#D0D0D0",
+    borderColor: COLORS.darkGrey,
     borderRadius: 50,
     left: -25,
     backgroundColor: "white",
@@ -134,7 +140,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderLeftWidth: 3,
-    borderColor: "#D0D0D0",
+    borderColor: COLORS.darkGrey,
     borderRadius: 50,
     right: -25,
     backgroundColor: "white",
@@ -144,11 +150,9 @@ const styles = StyleSheet.create({
   },
   dashes: {
     borderWidth: 1,
-    borderColor: "#D0D0D0",
+    borderColor: COLORS.darkGrey,
     height: 120,
     width: 1,
-    // position: "absolute",
-    // right: "30%",
     borderStyle: "dashed",
   },
   dataView: {

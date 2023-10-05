@@ -25,7 +25,6 @@ const language = {
 export const makeAuthenticatedGetRequest = (url: string): any => {
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
-    console.log("Access-Token GET Request---->", state?.user?.accessToken);
     return new Promise((resolve, reject) => {
       axiosInstance
         .get(url, {
@@ -109,13 +108,13 @@ export const makeAuthenticatedGetRequest = (url: string): any => {
 export const makeAuthenticatedPostRequest = (url: string, data: any): any => {
   return async (dispatch: any, getState: any) => {
     const state: any = getState();
-    console.log("Access-Token POST Request ---->", state?.user?.accessToken);
     return new Promise((resolve, reject) => {
       axiosInstance
         .post(url, data, {
           headers: {
             Authorization:
               state?.user?.accessToken && "Bearer " + state?.user?.accessToken,
+            "Content-Type": "application/json",
           },
         })
         .then(function (response) {

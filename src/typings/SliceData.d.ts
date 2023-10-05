@@ -1,34 +1,17 @@
-type TUserData = {
-  _embedded: Object;
-  additional_address: String;
-  address: String;
-  birth_day: String;
-  city: String;
-  country: String;
-  district: String;
-  email: String;
-  emailVerified: Boolean;
-  first_name: String;
-  gender: String;
-  language: String;
-  last_name: String;
-  phone: String;
-  phoneVerified: Boolean;
-  pictures: Object;
-  postal_code: String;
-  province: String;
-  referral_code: Number;
-  state: String;
-  subdistrict: String;
-  username: String;
-};
+/**
+ * @TUserProps user slice data types
+ * for extra slices specific and export types from here
+ */
 export type TUserProps = {
-  userData: TUserData | Object;
+  userData: any;
   accessToken: string;
   refreshToken: string;
-  serveyCountData: any;
 };
 
+/**
+ * global state slices data type
+ * add data in @TStateData when new slice add
+ */
 export type TStateData = {
   user: TUserProps;
 };

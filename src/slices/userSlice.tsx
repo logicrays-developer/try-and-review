@@ -3,10 +3,9 @@ import axiosInstance from "../Config/Axios/axiosInstance";
 import { TUserProps } from "../typings/SliceData";
 
 const initialState: TUserProps = {
-  userData: {},
+  userData: null,
   accessToken: "",
   refreshToken: "",
-  serveyCountData: [],
 };
 
 export const updateAccessToken = createAsyncThunk(
@@ -32,9 +31,6 @@ const userSlice = createSlice({
     setRefreshToken(state, action) {
       state.refreshToken = action.payload;
     },
-    setServeyCountData(state, action) {
-      state.serveyCountData = action.payload;
-    },
   },
 
   extraReducers: (builder) => {
@@ -48,10 +44,6 @@ const userSlice = createSlice({
   },
 });
 
-export const {
-  setUserData,
-  setAccessToken,
-  setRefreshToken,
-  setServeyCountData,
-} = userSlice.actions;
+export const { setUserData, setAccessToken, setRefreshToken } =
+  userSlice.actions;
 export default userSlice.reducer;

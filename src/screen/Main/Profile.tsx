@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -18,20 +18,19 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+
 import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
 import { TStateData } from "../../typings/SliceData";
+import { COLORS } from "../../styles";
 
 export const Profile = () => {
   const navigation: object | any = useNavigation();
   const dispatch = useDispatch();
-  const { userData } = useSelector((state: TStateData | any) => state.user);
+  const { userData } = useSelector((state: TStateData) => state.user);
   const [loading, setLoading] = useState<boolean>(true);
-  const { count_reviews, count_images, count_videos } =
-    userData?._embedded?.aggregations;
-  const { completion_pourcentage } = userData?._embedded;
-  const { first_name, last_name, pictures, email } = userData;
 
+  // get profile data when on profile screen, also update profile data in global states
   useEffect(() => {
     const getProfileData = async () => {
       try {
@@ -65,10 +64,11 @@ export const Profile = () => {
           resizeMode="cover"
         />
       </View>
+
       {/* Profile Content */}
       {loading ? (
         <View style={styles.headerContainer}>
-          <ActivityIndicator size={"small"} color={"#F97A02"} />
+          <ActivityIndicator size={"small"} color={COLORS.primary} />
         </View>
       ) : (
         <ScrollView>
@@ -79,16 +79,16 @@ export const Profile = () => {
             </Text>
             <View style={{ flexDirection: "row", flex: 1 }}>
               <View style={{ padding: 5 }}>
-                {!pictures ? (
+                {!userData?.pictures ? (
                   <FontAwesome6
                     name="user"
                     size={40}
-                    color={"#283671"}
+                    color={COLORS.labelText}
                     style={{ padding: 5 }}
                   />
                 ) : (
                   <Image
-                    source={{ uri: pictures }}
+                    source={{ uri: userData?.pictures }}
                     style={{ height: 40, width: 40, borderRadius: 20 }}
                     resizeMode="cover"
                   />
@@ -96,23 +96,24 @@ export const Profile = () => {
               </View>
               <View style={{ paddingHorizontal: 10, flex: 1 }}>
                 <Text style={[styles.titleText, { fontSize: 14 }]}>
-                  {first_name + " " + last_name}
+                  {userData?.first_name + " " + userData?.last_name}
                 </Text>
                 <Text
                   style={[styles.titleText, { color: "gray", fontSize: 12 }]}
                 >
-                  {email}
+                  {userData?.email}
                 </Text>
                 <Progress.Bar
-                  progress={completion_pourcentage / 100}
-                  color="#4500E7"
+                  progress={userData?._embedded?.completion_pourcentage / 100}
+                  color={COLORS.darkBlue}
                   style={{ marginTop: 7 }}
                   height={7}
                 />
                 <Text
                   style={{ color: "gray", fontSize: 12, paddingVertical: 3 }}
                 >
-                  {completion_pourcentage} % profile completed
+                  {userData?._embedded?.completion_pourcentage} % profile
+                  completed
                 </Text>
               </View>
             </View>
@@ -148,6 +149,7 @@ export const Profile = () => {
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* Extra */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>
@@ -163,28 +165,39 @@ export const Profile = () => {
             >
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_reviews}</Text>
+                  <Text style={styles.buttonText}>
+                    {userData?._embedded?.aggregations?.count_reviews}
+                  </Text>
                   <Text style={styles.buttonText}>Survey</Text>
                 </View>
-                <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+                <MaterialIcons name="edit" size={40} color={COLORS.darkBlue} />
               </View>
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_images}</Text>
+                  <Text style={styles.buttonText}>
+                    {userData?._embedded?.aggregations?.count_images}
+                  </Text>
                   <Text style={styles.buttonText}>Pictures</Text>
                 </View>
-                <FontAwesome name="camera" size={40} color={"#4500E7"} />
+                <FontAwesome name="camera" size={40} color={COLORS.darkBlue} />
               </View>
               <View style={styles.iconView}>
                 <View style={styles._viewBox}>
-                  <Text style={styles.buttonText}>{count_videos}</Text>
+                  <Text style={styles.buttonText}>
+                    {userData?._embedded?.aggregations?.count_videos}
+                  </Text>
                   <Text style={styles.buttonText}>Videos</Text>
                 </View>
-                <FontAwesome name="video-camera" size={40} color={"#4500E7"} />
+                <FontAwesome
+                  name="video-camera"
+                  size={40}
+                  color={COLORS.darkBlue}
+                />
               </View>
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* New extra data */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>
@@ -196,31 +209,43 @@ export const Profile = () => {
             </Text>
 
             <View style={styles.bottonsContainer}>
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ alignItems: "center" }}
+                activeOpacity={1}
+                onPress={() => navigation.navigate("Reward")}
+              >
                 <View style={styles.button}>
-                  <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+                  <MaterialIcons
+                    name="edit"
+                    size={40}
+                    color={COLORS.darkBlue}
+                  />
                 </View>
                 <Text style={styles.buttonText}>Survey</Text>
-              </View>
+              </TouchableOpacity>
 
               <View style={{ alignItems: "center" }}>
                 <View style={styles.button}>
                   <MaterialCommunityIcons
                     name="battery-plus-variant"
                     size={40}
-                    color={"#4500E7"}
+                    color={COLORS.darkBlue}
                   />
                 </View>
                 <Text style={styles.buttonText}>Polls</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                <View
+                  style={[styles.button, { backgroundColor: COLORS.lightGrey }]}
+                >
                   <Ionicons name="images" size={35} color={"gray"} />
                 </View>
                 <Text style={styles.buttonText}>Pictures</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                <View
+                  style={[styles.button, { backgroundColor: COLORS.lightGrey }]}
+                >
                   <Ionicons name="play" size={35} color={"gray"} />
                 </View>
                 <Text style={styles.buttonText}>Videos</Text>
@@ -228,6 +253,7 @@ export const Profile = () => {
             </View>
           </View>
           <View style={styles.separator} />
+
           {/* free data */}
           <View style={styles.contentView}>
             <Text style={[styles.titleText, { paddingVertical: 10 }]}>
@@ -245,7 +271,11 @@ export const Profile = () => {
                 onPress={() => navigation.navigate("Reward")}
               >
                 <View style={styles.button}>
-                  <MaterialIcons name="edit" size={40} color={"#4500E7"} />
+                  <MaterialIcons
+                    name="edit"
+                    size={40}
+                    color={COLORS.darkBlue}
+                  />
                 </View>
                 <Text style={styles.buttonText}>Survey</Text>
               </TouchableOpacity>
@@ -255,19 +285,23 @@ export const Profile = () => {
                   <MaterialCommunityIcons
                     name="battery-plus-variant"
                     size={40}
-                    color={"#4500E7"}
+                    color={COLORS.darkBlue}
                   />
                 </View>
                 <Text style={styles.buttonText}>Polls</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                <View
+                  style={[styles.button, { backgroundColor: COLORS.lightGrey }]}
+                >
                   <Ionicons name="images" size={35} color={"gray"} />
                 </View>
                 <Text style={styles.buttonText}>Pictures</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <View style={[styles.button, { backgroundColor: "#E8E8E8" }]}>
+                <View
+                  style={[styles.button, { backgroundColor: COLORS.lightGrey }]}
+                >
                   <Ionicons name="play" size={35} color={"gray"} />
                 </View>
                 <Text style={styles.buttonText}>Videos</Text>
@@ -287,7 +321,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
   },
   contentView: {
     flex: 1,
@@ -302,13 +336,13 @@ const styles = StyleSheet.create({
   titleText: {
     fontWeight: "600",
     fontSize: 16,
-    color: "#283671",
+    color: COLORS.labelText,
   },
   boxView: {
     borderWidth: 0.5,
     borderColor: "gray",
     maxWidth: 200,
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
@@ -318,7 +352,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  boxText: { color: "#283671", fontWeight: "500", padding: 10, fontSize: 12 },
+  boxText: {
+    color: COLORS.labelText,
+    fontWeight: "500",
+    padding: 10,
+    fontSize: 12,
+  },
   _viewBox: {
     justifyContent: "center",
     alignItems: "center",
@@ -327,14 +366,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "500",
-    color: "#283671",
+    color: COLORS.labelText,
     fontSize: 12,
     paddingVertical: 5,
   },
-  separator: { padding: 2, backgroundColor: "#E0E0E0" },
+  separator: { padding: 2, backgroundColor: COLORS.darkGrey },
   bottonsContainer: {
     flexDirection: "row",
-    // borderWidth: 1,
     marginVertical: 20,
     justifyContent: "space-evenly",
   },
@@ -342,7 +380,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
     justifyContent: "center",
     alignItems: "center",
   },

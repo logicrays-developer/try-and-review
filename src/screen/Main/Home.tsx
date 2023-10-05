@@ -18,6 +18,9 @@ import { makeAuthenticatedGetRequest } from "../../Config/Axios";
 import { setUserData } from "../../slices/userSlice";
 import { TStateData } from "../../typings/SliceData";
 
+/**
+ * static data for form ids, based on these form ids form question will fetch
+ */
 const surveyData = [
   {
     id: "650db838123a4",
@@ -49,15 +52,35 @@ const surveyData = [
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
+  {
+    id: "651daec26b72e2.60518979",
+    imgName:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
+  },
+  {
+    id: "651daeccce0b50.94222848",
+    imgName:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
+  },
 ];
 
 export const Home = () => {
+  /**
+   * import global states here
+   * define new states here
+   * use hooks at the top of main function if possible
+   */
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { userData } = useSelector((state: TStateData | any) => state.user);
-  console.log("userData: ", userData._embedded);
+  const { userData } = useSelector((state: TStateData) => state.user);
+
   const dispatch = useDispatch();
 
+  /**
+   * fetching user profile data if it is not exist in storage
+   * get data here as it is required in survey form submission
+   * url parameter slug is used as 'in' here
+   */
   useEffect(() => {
     const getProfileData = async () => {
       setLoading(true);
@@ -65,7 +88,9 @@ export const Home = () => {
         const data = await dispatch(
           makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
         );
-        data?.status === 200 && dispatch(setUserData(data?.data));
+        if (data?.status === 200) {
+          dispatch(setUserData(data?.data));
+        }
         setLoading(false);
       } catch (error) {
         console.log(
@@ -75,13 +100,16 @@ export const Home = () => {
         setLoading(false);
       }
     };
-    !userData.first_name && getProfileData();
+
+    // custom function required to use async-await inside useEffect
+    !userData?.first_name && getProfileData();
   }, []);
 
+  // api for homescreen not available. so, static data used
   const renderHeader = () => {
     return (
       <View style={{ flex: 1 }}>
-        {/* Completed surveys counts */}
+        {/* Completed surveys counts display here */}
         <View style={styles.surveyCountContainer}>
           <View>
             <Text style={styles.completedSurveysCountText}>
@@ -124,7 +152,7 @@ export const Home = () => {
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
             }}
-            style={styles.imageReview}
+            style={[styles.imageReview, { backgroundColor: COLORS.lightGrey }]}
             resizeMode="cover"
           />
           <Text style={styles.descriptionText}>
@@ -141,6 +169,7 @@ export const Home = () => {
     );
   };
 
+  //individual survey card with static form id data
   const reviewCard = (item: any) => {
     return (
       <TouchableOpacity
@@ -158,6 +187,7 @@ export const Home = () => {
             height: deviceWidth / 4 - 30,
             width: deviceWidth / 4 - 30,
             borderRadius: 10,
+            backgroundColor: COLORS.lightGrey,
           }}
           resizeMode="cover"
         />
@@ -169,7 +199,7 @@ export const Home = () => {
     <View style={styles.container}>
       {loading ? (
         <View style={styles.headerContainer}>
-          <ActivityIndicator size={"small"} color={"#F97A02"} />
+          <ActivityIndicator size={"small"} color={COLORS.primary} />
         </View>
       ) : (
         <React.Fragment>
@@ -215,10 +245,13 @@ export const Home = () => {
   );
 };
 
+/**
+ * use styles by creating it with StyleSheet at the end of file
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.darkBlue,
   },
   headerContainer: {
     alignItems: "center",
@@ -256,12 +289,12 @@ const styles = StyleSheet.create({
   },
   completedSurveysCountText: {
     fontSize: 60,
-    color: "#384455",
+    color: COLORS.darkText,
     fontWeight: "500",
   },
   divisionText: {
     fontSize: 20,
-    color: "#55505e",
+    color: COLORS.darkText,
     fontWeight: "500",
   },
   outOfMainContainer: {
@@ -274,7 +307,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   surveysText: { color: COLORS.white, fontSize: 12 },
-  totalOfCountText: { fontSize: 20, color: "#55505e", fontWeight: "500" },
+  totalOfCountText: { fontSize: 20, color: COLORS.darkText, fontWeight: "500" },
   surveysDescriptionContainer: { marginTop: 20 },
   surveyReviewContainer: {
     marginTop: 25,
@@ -282,7 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     overflow: "hidden",
-    backgroundColor: COLORS.foodCard,
+    backgroundColor: COLORS.cardbackground,
   },
   imageReview: {
     flex: 1.3,

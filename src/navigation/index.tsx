@@ -7,9 +7,14 @@ import Login from "../screen/Auth/Login";
 import { Form, Home, Profile, Reward, Success } from "../screen/Main";
 import { TStackParam } from "../typings/Navigation";
 
+// create stack navigator handler to handle navigation
 const Stack = createStackNavigator<TStackParam>();
 
 const AppRouter = () => {
+  /**
+   * based on accessToken global state from redux, app flow will work
+   * if user logged in, go to home else go to Login
+   */
   const { accessToken } = useSelector((state: TStateData) => state.user);
 
   return (
