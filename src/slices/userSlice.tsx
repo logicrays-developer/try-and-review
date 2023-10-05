@@ -6,7 +6,6 @@ const initialState: TUserProps = {
   userData: null,
   accessToken: "",
   refreshToken: "",
-  serveyCountData: [],
 };
 
 export const updateAccessToken = createAsyncThunk(
@@ -32,17 +31,6 @@ const userSlice = createSlice({
     setRefreshToken(state, action) {
       state.refreshToken = action.payload;
     },
-    setServeyCountData(state, action) {
-      const isAvailable = state.serveyCountData.some(
-        (i: string) => i == action.payload
-      );
-      if (!isAvailable) {
-        state.serveyCountData =
-          action.payload == null
-            ? []
-            : [...state.serveyCountData, action.payload];
-      }
-    },
   },
 
   extraReducers: (builder) => {
@@ -56,10 +44,6 @@ const userSlice = createSlice({
   },
 });
 
-export const {
-  setUserData,
-  setAccessToken,
-  setRefreshToken,
-  setServeyCountData,
-} = userSlice.actions;
+export const { setUserData, setAccessToken, setRefreshToken } =
+  userSlice.actions;
 export default userSlice.reducer;

@@ -33,7 +33,6 @@ import {
   makeAuthenticatedPostRequest,
 } from "../../Config/Axios";
 import { TStateData, TUserProps } from "../../typings/SliceData";
-import { setServeyCountData } from "../../slices/userSlice";
 import { COLORS } from "../../styles";
 
 const { width } = Dimensions.get("screen");
@@ -98,20 +97,31 @@ export const Form = ({ route }: any) => {
    */
   const formSubmit = async () => {
     setLoading(true);
+    /**
+     * formatting birthdate as mentioned in docs
+     */
+    let splitDate = userData?.birth_day?.split("-");
+    const dates =
+      splitDate.length === 3
+        ? `${splitDate[splitDate.length - 1]}/${
+            splitDate[splitDate.length - 2]
+          }/${splitDate[splitDate.length - 3]}`
+        : "";
+
     let profileData: any = {
-      birthday: userData?.birth_day,
+      birthday: dates || "",
       parentAuthorization: "on",
-      address: userData?.address,
-      additionalAddress: userData?.additional_address,
+      address: userData?.address || "",
+      additionalAddress: userData?.additional_address || "",
       postalCode: Number(userData?.postal_code),
-      city: userData?.city,
-      state: userData?.state,
-      district: userData?.district,
-      subdistrict: userData?.subdistrict,
-      province: userData?.province,
-      country: userData?.country,
-      phone: userData?.phone,
-      email: userData?.email,
+      city: userData?.city || "",
+      state: userData?.state || "",
+      district: userData?.district || "",
+      subdistrict: userData?.subdistrict || "",
+      province: userData?.province || "",
+      country: userData?.country || "",
+      phone: userData?.phone?.split(" ")[1] || "",
+      email: userData?.email || "",
     };
     let params: any = {};
     questionArr.map((question) => {
@@ -148,11 +158,9 @@ export const Form = ({ route }: any) => {
       if (formSubmitResponse.status === 200) {
         setLoading(false);
         navigation.navigate("Success");
-        dispatch(setServeyCountData(questionId));
       }
     } catch (error: any) {
       setLoading(false);
-      dispatch(setServeyCountData(questionId));
     }
   };
 
@@ -854,7 +862,7 @@ export const Form = ({ route }: any) => {
                           backgroundColor:
                             data.question.ans &&
                             data.question.ans[oIndex]?.answerIndex === sIndex
-                              ? "#CDE9E1"
+                              ? COLORS.pistaBackground
                               : COLORS.liteWhite,
                         },
                       ]}
@@ -921,7 +929,7 @@ export const Form = ({ route }: any) => {
                 { backgroundColor: COLORS.white },
               ]}
             >
-              <ActivityIndicator size={"small"} color={"#F97A02"} />
+              <ActivityIndicator size={"small"} color={COLORS.primary} />
             </View>
           ) : (
             <>
@@ -964,7 +972,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
   },
   backBar: {
     flexDirection: "row",
@@ -1117,7 +1125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    backgroundColor: "#F97A02",
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
   },
   buttonText: {

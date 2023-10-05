@@ -18,7 +18,7 @@ export const Success = () => {
   const navigation: any = useNavigation();
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor="#CDE9E1" />
+      <StatusBar backgroundColor={COLORS.pistaBackground} />
       <View style={styles.imageContainer}>
         <Image
           source={require("../../assets/images/Star_Congratulation.png")}
@@ -56,7 +56,7 @@ export const Success = () => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: "#CDE9E1",
+    backgroundColor: COLORS.pistaBackground,
     flex: 1,
     paddingVertical: height * 0.125,
   },
@@ -73,11 +73,11 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 35,
     fontWeight: "500",
-    color: "#283671",
+    color: COLORS.labelText,
   },
   descriptionText: {
     fontSize: 20,
-    color: "#283671",
+    color: COLORS.labelText,
     maxWidth: deviceWidth * 0.8,
     textAlign: "center",
     marginBottom: 20,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     height: 50,
     width: width * 0.6,
-    backgroundColor: "#283671",
+    backgroundColor: COLORS.labelText,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,

@@ -52,6 +52,16 @@ const surveyData = [
     imgName:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
   },
+  {
+    id: "651daec26b72e2.60518979",
+    imgName:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
+  },
+  {
+    id: "651daeccce0b50.94222848",
+    imgName:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8F-DK-y9Msncah3O429hnZZaCdMLn-Y_qLw&usqp=CAU",
+  },
 ];
 
 export const Home = () => {
@@ -62,9 +72,7 @@ export const Home = () => {
    */
   const navigation: object | any = useNavigation();
   const [loading, setLoading] = useState(false);
-  const { userData, serveyCountData } = useSelector(
-    (state: TStateData | any) => state.user
-  );
+  const { userData } = useSelector((state: TStateData) => state.user);
 
   const dispatch = useDispatch();
 
@@ -105,8 +113,7 @@ export const Home = () => {
         <View style={styles.surveyCountContainer}>
           <View>
             <Text style={styles.completedSurveysCountText}>
-              {serveyCountData?.length}
-              {/* {userData?._embedded?.aggregations?.count_reviews} */}
+              {userData?._embedded?.aggregations?.count_reviews}
             </Text>
           </View>
 
@@ -192,7 +199,7 @@ export const Home = () => {
     <View style={styles.container}>
       {loading ? (
         <View style={styles.headerContainer}>
-          <ActivityIndicator size={"small"} color={"#F97A02"} />
+          <ActivityIndicator size={"small"} color={COLORS.primary} />
         </View>
       ) : (
         <React.Fragment>
@@ -244,7 +251,7 @@ export const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.darkBlue,
   },
   headerContainer: {
     alignItems: "center",
@@ -282,12 +289,12 @@ const styles = StyleSheet.create({
   },
   completedSurveysCountText: {
     fontSize: 60,
-    color: "#384455",
+    color: COLORS.darkText,
     fontWeight: "500",
   },
   divisionText: {
     fontSize: 20,
-    color: "#55505e",
+    color: COLORS.darkText,
     fontWeight: "500",
   },
   outOfMainContainer: {
@@ -300,7 +307,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   surveysText: { color: COLORS.white, fontSize: 12 },
-  totalOfCountText: { fontSize: 20, color: "#55505e", fontWeight: "500" },
+  totalOfCountText: { fontSize: 20, color: COLORS.darkText, fontWeight: "500" },
   surveysDescriptionContainer: { marginTop: 20 },
   surveyReviewContainer: {
     marginTop: 25,
@@ -308,7 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     overflow: "hidden",
-    backgroundColor: COLORS.foodCard,
+    backgroundColor: COLORS.cardbackground,
   },
   imageReview: {
     flex: 1.3,

@@ -6,7 +6,6 @@ export type TUserProps = {
   userData: any;
   accessToken: string;
   refreshToken: string;
-  serveyCountData: any;
 };
 
 /**

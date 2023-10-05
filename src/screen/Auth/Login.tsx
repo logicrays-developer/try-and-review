@@ -17,11 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { deviceHeight, deviceWidth } from "../../utils/Dimension";
 import { makeAuthenticatedPostRequest } from "../../Config/Axios";
-import {
-  setAccessToken,
-  setRefreshToken,
-  setServeyCountData,
-} from "../../slices/userSlice";
+import { setAccessToken, setRefreshToken } from "../../slices/userSlice";
 import { Button, Label, CustomTextInput } from "../../components/index";
 import { COLORS } from "../../styles";
 
@@ -58,7 +54,6 @@ const Login = () => {
         // dispatching action for update global data
         dispatch(setAccessToken(data?.data?.token));
         dispatch(setRefreshToken(data?.data?.refresh_token));
-        dispatch(setServeyCountData(null));
         navigation.reset({
           index: 0,
           routes: [
@@ -91,7 +86,6 @@ const Login = () => {
             </TouchableOpacity>
 
             {/* Login card container */}
-
             <View style={styles.container}>
               <Label
                 title="Login"
