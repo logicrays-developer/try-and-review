@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Image,
   StatusBar,
@@ -11,11 +11,37 @@ import {
 import { deviceWidth } from "../../utils/Dimension";
 import { COLORS } from "../../styles";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { makeAuthenticatedGetRequest } from "../../Config/Axios";
+import { setUserData } from "../../slices/userSlice";
 
 const { height, width } = Dimensions.get("screen");
 
 export const Success = () => {
   const navigation: any = useNavigation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
+        const data = await dispatch(
+          makeAuthenticatedGetRequest(`/api/app/in/users/profile`)
+        );
+        if (data?.status === 200) {
+          dispatch(setUserData(data?.data));
+        }
+      } catch (error) {
+        console.log(
+          "Error from profile APIs calling in home-screen....",
+          error
+        );
+      }
+    };
+
+    // custom function required to use async-await inside useEffect
+    getProfileData();
+  }, []);
+
   return (
     <View style={styles.mainContainer}>
       <StatusBar backgroundColor={COLORS.pistaBackground} />
